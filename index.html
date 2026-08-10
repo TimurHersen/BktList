@@ -431,186 +431,33 @@
   }
   .btn-cancel:hover { transform: translateY(-1px); }
 
-  /* ─── PROGRAMME ─── */
-  .day-label {
-    display: inline-block;
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--card);
-    background: var(--blue-dark);
-    border: var(--line);
-    padding: 5px 20px;
+  /* ─── MOVIES / FİLMLER & DİZİLER ─── */
+  .movie-watched {
+    opacity: 0.55;
+  }
+  .movie-watched .tip-name {
+    text-decoration: line-through;
+  }
+  .watched-btn {
+    background: var(--card-soft);
+    border: 1.5px solid var(--ink);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 5px 10px;
     border-radius: var(--radius-pill);
-    margin: 26px 0 18px;
-    box-shadow: var(--shadow-sm);
-  }
-  .prog-tl { position: relative; padding-left: 26px; }
-  .prog-tl::before {
-    content: '';
-    position: absolute;
-    left: 6px;
-    top: 14px;
-    bottom: 14px;
-    width: 2px;
-    background: repeating-linear-gradient(to bottom, var(--ink) 0, var(--ink) 6px, transparent 6px, transparent 11px);
-  }
-  .ev { position: relative; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 14px; }
-  .ev::before {
-    content: '';
-    position: absolute;
-    left: -26px;
-    top: 14px;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background: var(--card);
-    border: 2.5px solid var(--ink);
-    box-sizing: border-box;
-  }
-  .ev.hl::before { background: var(--gold); }
-  .ev.tr::before { background: var(--blue-light); }
-  .ev.br::before { background: var(--teal); }
-  .ev.rd::before { background: var(--rust); }
-  .ev.pu::before { background: var(--plum); }
-  .ev.pk::before { background: var(--rose); }
-
-  .tb {
-    font-size: 11.5px;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    color: var(--card);
-    background: var(--ink);
-    min-width: 52px;
-    padding: 6px 8px;
-    text-align: center;
-    border-radius: var(--radius-sm);
-    margin-top: 8px;
-  }
-  .card {
-    flex: 1;
-    border: var(--line-soft);
-    border-left: 4px solid var(--ink);
-    border-radius: var(--radius);
-    padding: 12px 16px;
-    background: var(--card);
-    box-shadow: var(--shadow-sm);
-  }
-  .ct {
-    font-size: 15.5px;
-    font-weight: 600;
-    font-family: var(--font-head);
-    color: var(--ink);
     display: flex;
     align-items: center;
-    gap: 8px;
-  }
-  .ci { font-size: 19px; }
-  .card.hl { border-left-color: var(--gold-deep); background: #FBF3DD; }
-  .card.tr { border-left-color: var(--blue); background: #EAF2F7; }
-  .card.br { border-left-color: var(--teal); background: #EAF3F1; }
-  .card.rd { border-left-color: var(--rust); background: #FBEEE9; }
-  .card.pu { border-left-color: var(--plum); background: #F1ECF3; }
-  .card.pk { border-left-color: var(--rose); background: #FAEEF0; }
-
-  .dart-note {
-    margin: 8px 0 0;
-    font-size: 11px;
-    font-family: var(--font-body);
-    font-weight: 600;
-    padding: 6px 10px;
-    border-radius: var(--radius-sm);
-    background: var(--card-soft);
-    color: var(--ink);
-    border: 1.5px dashed var(--ink);
-  }
-  .dur { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
-  .dur-bar { height: 3px; border-radius: 2px; background: var(--ink); opacity: 0.35; }
-  .dur-lbl { font-size: 11px; font-family: var(--font-mono); font-weight: 700; color: var(--ink); }
-
-  /* ─── DART ─── */
-  .dart-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px;
-    margin-top: 14px;
-  }
-  .dart-item {
-    background: var(--card);
-    border: var(--line-soft);
-    border-radius: var(--radius-sm);
-    padding: 12px 14px;
-    box-shadow: var(--shadow-sm);
-  }
-  .dart-range {
-    display: inline-block;
-    font-size: 13px;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    color: var(--card);
-    background: var(--ink);
-    padding: 3px 12px;
-    border-radius: var(--radius-pill);
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
-  }
-  .dart-name { font-size: 14px; font-weight: 600; font-family: var(--font-head); color: var(--ink); margin-bottom: 4px; }
-  .dart-desc { font-size: 12px; color: var(--ink-soft); line-height: 1.5; font-family: var(--font-body); font-weight: 500; }
-
-  .ring-row { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
-  .ring-rule {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    background: var(--card);
-    border: var(--line-soft);
-    border-radius: var(--radius-sm);
-    padding: 10px 12px;
-    box-shadow: var(--shadow-sm);
-  }
-  .ring-badge {
-    font-size: 10.5px;
+    gap: 4px;
     font-family: var(--font-head);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 4px 12px;
-    border-radius: var(--radius-pill);
-    white-space: nowrap;
-    flex-shrink: 0;
-    border: 1.5px solid var(--ink);
+    font-weight: 600;
+    color: var(--ink-soft);
+    transition: transform 0.1s, background 0.15s, color 0.15s;
   }
-  .rs  { background: var(--blue-light); color: var(--ink); }
-  .rd2 { background: var(--teal);       color: var(--card); }
-  .rt  { background: var(--rust);       color: var(--card); }
-  .ring-text { font-size: 13px; color: var(--ink); line-height: 1.5; font-family: var(--font-body); font-weight: 500; }
+  .watched-btn:hover { transform: translateY(-1px); }
+  .watched-btn.watched { background: var(--teal); color: var(--card); border-color: var(--ink); }
 
-  .bull-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
-  .bull-card {
-    border-radius: var(--radius-sm);
-    padding: 14px 16px;
-    border: var(--line-soft);
-    box-shadow: var(--shadow-sm);
-  }
-  .bull-card.outer { background: #EAF3F1; border-left: 4px solid var(--teal); }
-  .bull-card.inner { background: #FBEEE9; border-left: 4px solid var(--rust); }
-  .bull-title { font-size: 14px; font-weight: 600; font-family: var(--font-head); color: var(--ink); margin-bottom: 3px; }
-  .bull-pts {
-    font-size: 10px;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 8px;
-    opacity: 0.65;
-  }
-  .bull-desc {
-    font-size: 13px;
-    line-height: 1.45;
-    font-family: var(--font-body);
-    font-weight: 500;
-    color: var(--ink);
-  }
+  .cat-film { background: var(--gold);       color: var(--ink); }
+  .cat-dizi { background: var(--blue-light); color: var(--ink); }
 
   /* ─── TBD ─── */
   .tbd {
@@ -708,10 +555,10 @@
   .vote-btn.voted { background: var(--gold); }
   .vote-count { font-size: 13px; font-family: var(--font-mono); font-weight: 700; color: var(--ink); min-width: 16px; text-align: center; }
 
-  .card, .dart-item, .ring-rule, .bull-card, .tip-card {
+  .tip-card {
     transition: transform 0.1s, box-shadow 0.1s;
   }
-  .card:hover, .dart-item:hover, .tip-card:hover {
+  .tip-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow);
   }
@@ -1071,14 +918,7 @@
     .tabs { padding: 20px 14px 0; }
     .tab-btn { padding: 8px 13px; font-size: 11.5px; }
     .panels { padding: 0 14px 80px; }
-    .day-label { font-size: 20px; padding: 5px 16px; }
     .sec-label { font-size: 10px; }
-    .tb { min-width: 44px; font-size: 10.5px; padding: 5px 6px; }
-    .card { padding: 10px 12px; }
-    .ct { font-size: 14px; }
-    .ci { font-size: 17px; }
-    .bull-row { grid-template-columns: 1fr; }
-    .dart-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
     .tips-cats { gap: 6px; }
     .tips-cat-btn { font-size: 10px; padding: 4px 10px; }
     .tip-card { padding: 12px; gap: 10px; }
@@ -1098,8 +938,6 @@
   }
   @media (max-width: 360px) {
     .header h1 { font-size: 34px; }
-    .prog-tl { padding-left: 22px; }
-    .ev::before { left: -22px; width: 13px; height: 13px; }
   }
 </style>
 </head>
@@ -1173,8 +1011,7 @@
 <!-- ═══════════ TABS ═══════════ -->
 <div class="tabs">
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('programme')">Program: Yapılacaklar</button>
-    <button class="tab-btn" onclick="switchTab('dart')">Dart Oyunu</button>
+    <button class="tab-btn active" onclick="switchTab('movies')">Filmler &amp; Diziler</button>
     <button class="tab-btn" onclick="switchTab('tips')">Öneriler</button>
     <button class="tab-btn" onclick="switchTab('photos')">Resimler 📸</button>
     <button class="tab-btn" onclick="switchTab('sos')">Kayıp mı Oldun? 🆘</button>
@@ -1184,120 +1021,47 @@
 <!-- ═══════════ PANELS ═══════════ -->
 <div class="panels">
 
-  <!-- PROGRAMME -->
-  <div class="panel active" id="tab-programme">
-
-    <div class="day-label">Cuma</div>
-    <div class="prog-tl" id="friday-list"></div>
-    <button class="add-btn" onclick="toggleForm('friday-form')"><span class="add-btn-icon">+</span> Etkinlik ekle</button>
-    <div class="add-form" id="friday-form">
+  <!-- MOVIES / FİLMLER & DİZİLER -->
+  <div class="panel active" id="tab-movies">
+    <p class="sec-label">Ne izlesek?</p>
+    <div class="tips-cats">
+      <button class="tips-cat-btn active" onclick="filterMovies('hepsi')">Hepsi</button>
+      <button class="tips-cat-btn" onclick="filterMovies('film')">🎬 Film</button>
+      <button class="tips-cat-btn" onclick="filterMovies('dizi')">📺 Dizi</button>
+    </div>
+    <div class="tips-list" id="movies-list"></div>
+    <button class="add-btn" onclick="toggleForm('movies-form')" style="margin-top:18px"><span class="add-btn-icon">+</span> Film/dizi ekle</button>
+    <div class="add-form" id="movies-form">
       <div class="form-row">
-        <div class="form-field" style="max-width:80px">
-          <label>Saat</label>
-          <input id="ff-time" type="text" placeholder="20:00">
-        </div>
         <div class="form-field" style="max-width:70px">
           <label>Emoji</label>
-          <input id="ff-emoji" type="text" placeholder="🍺">
-        </div>
-        <div class="form-field">
-          <label>Başlık</label>
-          <input id="ff-title" type="text" placeholder="Etkinliğin adı">
-        </div>
-      </div>
-      <div class="form-field">
-        <label>Renk</label>
-        <select id="ff-color">
-          <option value="hl">Altın</option>
-          <option value="tr">Mavi</option>
-          <option value="br">Turkuaz</option>
-          <option value="rd">Kiremit</option>
-          <option value="pu">Mor</option>
-          <option value="pk">Pembe</option>
-        </select>
-      </div>
-      <div class="form-actions">
-        <button class="btn-cancel" onclick="toggleForm('friday-form')">İptal</button>
-        <button class="btn-save" onclick="addEvent('friday')">Kaydet</button>
-      </div>
-    </div>
-
-    <div class="day-label" style="margin-top:32px">Cumartesi</div>
-    <div class="prog-tl" id="saturday-list"></div>
-    <button class="add-btn" onclick="toggleForm('saturday-form')"><span class="add-btn-icon">+</span> Etkinlik ekle</button>
-    <div class="add-form" id="saturday-form">
-      <div class="form-row">
-        <div class="form-field" style="max-width:80px">
-          <label>Saat</label>
-          <input id="sf2-time" type="text" placeholder="20:00">
-        </div>
-        <div class="form-field" style="max-width:70px">
-          <label>Emoji</label>
-          <input id="sf2-emoji" type="text" placeholder="🍺">
-        </div>
-        <div class="form-field">
-          <label>Başlık</label>
-          <input id="sf2-title" type="text" placeholder="Etkinliğin adı">
-        </div>
-      </div>
-      <div class="form-field">
-        <label>Renk</label>
-        <select id="sf2-color">
-          <option value="hl">Altın</option>
-          <option value="tr">Mavi</option>
-          <option value="br">Turkuaz</option>
-          <option value="rd">Kiremit</option>
-          <option value="pu">Mor</option>
-          <option value="pk">Pembe</option>
-        </select>
-      </div>
-      <div class="form-actions">
-        <button class="btn-cancel" onclick="toggleForm('saturday-form')">İptal</button>
-        <button class="btn-save" onclick="addEvent('saturday')">Kaydet</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- DART -->
-  <div class="panel" id="tab-dart">
-    <p class="sec-label">Halka Sistemi</p>
-    <div class="ring-row">
-      <div class="ring-rule"><span class="ring-badge rs">Tek</span><span class="ring-text">Görevi tarif edildiği gibi bir kez yap.</span></div>
-      <div class="ring-rule"><span class="ring-badge rd2">Çift</span><span class="ring-text">Görev damat İLE solundaki kişi için geçerlidir.</span></div>
-      <div class="ring-rule"><span class="ring-badge rt">Üçlü</span><span class="ring-text">Görev tüm grup için geçerlidir — kimse kaçamaz.</span></div>
-    </div>
-    <hr class="divider">
-    <p class="sec-label">Puan Aralığı 0 – 180</p>
-    <div class="dart-grid" id="dart-list"></div>
-    <button class="add-btn" onclick="toggleForm('dart-form')" style="margin-top:18px"><span class="add-btn-icon">+</span> Görev ekle</button>
-    <div class="add-form" id="dart-form">
-      <div class="form-row">
-        <div class="form-field" style="max-width:90px">
-          <label>Min</label>
-          <input id="df-min" type="number" min="0" max="180" placeholder="0">
-        </div>
-        <div class="form-field" style="max-width:90px">
-          <label>Maks</label>
-          <input id="df-max" type="number" min="0" max="180" placeholder="20">
+          <input id="mf-emoji" type="text" placeholder="🎬">
         </div>
         <div class="form-field">
           <label>İsim</label>
-          <input id="df-name" type="text" placeholder="Görevin adı">
+          <input id="mf-title" type="text" placeholder="Film/dizi adı">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Tür</label>
+          <select id="mf-type">
+            <option value="film">🎬 Film</option>
+            <option value="dizi">📺 Dizi</option>
+          </select>
         </div>
       </div>
       <div class="form-field">
-        <label>Açıklama</label>
-        <textarea id="df-desc" rows="2" placeholder="Ne yapması gerekiyor?"></textarea>
+        <label>Not</label>
+        <textarea id="mf-note" rows="2" placeholder="Neden izlemeliyiz?"></textarea>
       </div>
       <div class="form-actions">
-        <button class="btn-cancel" onclick="toggleForm('dart-form')">İptal</button>
-        <button class="btn-save" onclick="addDartItem()">Kaydet</button>
+        <button class="btn-cancel" onclick="toggleForm('movies-form')">İptal</button>
+        <button class="btn-save" onclick="addMovie()">Kaydet</button>
       </div>
     </div>
-    <hr class="divider">
-    <p class="sec-label">Merkez</p>
-    <div class="bull-row" id="bull-list"></div>
   </div>
+
 
   <!-- TIPS / ÖNERİLER -->
   <div class="panel" id="tab-tips">
@@ -1431,23 +1195,11 @@ const DB_URL = 'https://bktlist-97058-default-rtdb.europe-west1.firebasedatabase
 const PHOTOS_URL = 'https://bktlist-97058-default-rtdb.europe-west1.firebasedatabase.app/photos.json';
 const PHOTO_BASE = 'https://bktlist-97058-default-rtdb.europe-west1.firebasedatabase.app/photos';
 
-const CAT_LABELS = { bar:'Bar', mat:'Yemek', sev:'Gezilecek Yer', akt:'Aktivite', kul:'Eğlenceli' };
-const CAT_CSS    = { bar:'cat-bar', mat:'cat-mat', sev:'cat-sev', akt:'cat-akt', kul:'cat-kul' };
-let _tipsFilter = 'alla';
-
 let _editCtx = null;
 
-function parseTime(t) {
-  if (!t || t === '—') return 9999;
-  const m = t.match(/(\d{1,2}):(\d{2})/);
-  return m ? parseInt(m[1]) * 60 + parseInt(m[2]) : 9999;
-}
-function sortByTime(arr) {
-  return [...arr].sort((a, b) => parseTime(a.time) - parseTime(b.time));
-}
-
-let friday = [], saturday = [], darts = [], tips = [], bull = [];
+let movies = [], tips = [];
 let photos = []; // [{ id (firebase key), data (base64), uploaded (ts) }]
+let _moviesFilter = 'hepsi';
 
 function showStatus(msg, ok = true) {
   const el = document.getElementById('save-status');
@@ -1463,11 +1215,11 @@ async function saveToCloud() {
     const res = await fetch(DB_URL, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ friday, saturday, darts, tips, bull })
+      body: JSON.stringify({ movies, tips })
     });
     if (!res.ok) throw new Error();
     await res.json();
-    writeCache({ friday, saturday, darts, tips, bull });
+    writeCache({ movies, tips });
     showStatus('Kaydedildi ✓');
   } catch(e) {
     showStatus('Kayıt başarısız ✗', false);
@@ -1476,64 +1228,75 @@ async function saveToCloud() {
 
 /* ── renderers ── */
 
-function renderEvents(day) {
-  const data = sortByTime(day === 'friday' ? friday : saturday);
-  const el = document.getElementById(day + '-list');
-  el.innerHTML = data.map(e => `
-    <div class="ev ${e.color} deletable">
-      <button class="edit-btn" onclick="openEdit('${day}',${e.id})">✎</button>
-      <button class="del-btn" onclick="deleteItem('${day}',${e.id})">×</button>
-      <div class="tb">${e.time}</div>
-      <div class="card ${e.color}">
-        <p class="ct"><span class="ci">${e.emoji}</span>${e.title}</p>
-        ${e.dart ? `<div class="dart-note">🎯 Dart tahtası — Ludvig atar, ok aktiviteyi &amp; görevi belirler</div>` : ''}
-        ${e.dur ? `<div class="dur"><div class="dur-bar" style="width:80px"></div><span class="dur-lbl">${e.dur}</span></div>` : ''}
+const MOVIE_TYPE_LABELS = { film: 'Film', dizi: 'Dizi' };
+const MOVIE_TYPE_CSS    = { film: 'cat-film', dizi: 'cat-dizi' };
+const MOVIE_TYPE_ICON   = { film: '🎬', dizi: '📺' };
+
+function renderMovies() {
+  const el = document.getElementById('movies-list');
+  const filtered = _moviesFilter === 'hepsi' ? movies : movies.filter(m => m.type === _moviesFilter);
+  if (!filtered.length) {
+    el.innerHTML = `<div style="padding:32px 0;text-align:center;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;color:#6B7C8C">Henüz film/dizi önerisi yok — bir tane ekle! 🍿</div>`;
+    return;
+  }
+  el.innerHTML = filtered.map(m => `
+    <div class="tip-card deletable${m.watched ? ' movie-watched' : ''}">
+      <button class="edit-btn" onclick="openEdit('movies',${m.id})">✎</button>
+      <button class="del-btn" onclick="deleteItem('movies',${m.id})">×</button>
+      <div class="tip-icon">${m.emoji || MOVIE_TYPE_ICON[m.type] || '🎬'}</div>
+      <div class="tip-body">
+        <div class="tip-name">${m.title}</div>
+        <div class="tip-meta">
+          <span class="cat-badge ${MOVIE_TYPE_CSS[m.type] || 'cat-film'}">${MOVIE_TYPE_LABELS[m.type] || m.type}</span>
+        </div>
+        ${m.note ? `<div class="tip-note">${m.note}</div>` : ''}
+      </div>
+      <div class="tip-voted">
+        <button class="watched-btn${m.watched ? ' watched' : ''}" onclick="toggleWatched(${m.id})">${m.watched ? '✓ İzlendi' : 'İzlenecek'}</button>
+        <button class="vote-btn${(m.votes||0) > 0 ? ' voted' : ''}" onclick="voteMovie(${m.id})">👍</button>
+        <span class="vote-count">${m.votes || 0}</span>
       </div>
     </div>`).join('');
 }
 
-function dartRangeColor(min) {
-  if (min === 0 && min === (darts.find(d => d.min === 0 && d.max === 0) || {}).max) return '#16283D';
-  if (min <= 20)  return '#2C5B7C';
-  if (min <= 40)  return '#4E8B85';
-  if (min <= 60)  return '#16374F';
-  if (min <= 80)  return '#8C6E96';
-  if (min <= 100) return '#C89B3C';
-  if (min <= 120) return '#9C7526';
-  if (min <= 140) return '#B24E30';
-  if (min <= 159) return '#8C6E96';
-  if (min <= 179) return '#C98B98';
-  return '#16374F';
-}
-function dartRangeLabel(d) {
-  if (d.min === d.max) return String(d.min);
-  return d.min + '–' + d.max;
-}
-function renderDarts() {
-  const el = document.getElementById('dart-list');
-  const sorted = [...darts].sort((a, b) => a.min - b.min);
-  el.innerHTML = sorted.map(d => `
-    <div class="dart-item deletable" style="${!d.name ? 'border-style:dashed;opacity:0.65;' : ''}">
-      <button class="edit-btn" onclick="openEdit('darts',${d.id})">✎</button>
-      <button class="del-btn" onclick="deleteItem('darts',${d.id})">×</button>
-      <div class="dart-range" style="background:${dartRangeColor(d.min)}">${dartRangeLabel(d)}</div>
-      <div class="dart-name" style="${!d.name ? 'color:#6B7C8C;font-style:italic;font-weight:500;' : ''}">${d.name || 'Görevi yaz...'}</div>
-      ${d.desc ? `<div class="dart-desc">${d.desc}</div>` : ''}
-    </div>`).join('');
+function filterMovies(type) {
+  _moviesFilter = type;
+  document.querySelectorAll('#tab-movies .tips-cat-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim().includes(type === 'hepsi' ? 'Hepsi' : MOVIE_TYPE_LABELS[type] || type));
+  });
+  renderMovies();
 }
 
-function renderBull() {
-  const el = document.getElementById('bull-list');
-  if (!el) return;
-  const styles = { 'bull-outer': 'outer', 'bull-inner': 'inner' };
-  el.innerHTML = bull.map(b => `
-    <div class="bull-card ${styles[b.id] || 'outer'} deletable">
-      <button class="edit-btn" onclick="openEdit('bull','${b.id}')" style="top:-8px;right:22px">✎</button>
-      <div class="bull-title">${b.title}</div>
-      <div class="bull-pts">${b.sub}</div>
-      <div class="bull-desc" style="${!b.desc ? 'opacity:0.55;font-style:italic;' : ''}">${b.desc || 'Görevi yaz...'}</div>
-    </div>`).join('');
+function voteMovie(id) {
+  movies = movies.map(m => m.id === id ? { ...m, votes: (m.votes || 0) + 1 } : m);
+  renderMovies();
+  saveToCloud();
 }
+
+function toggleWatched(id) {
+  movies = movies.map(m => m.id === id ? { ...m, watched: !m.watched } : m);
+  renderMovies();
+  saveToCloud();
+}
+
+function addMovie() {
+  const emoji = document.getElementById('mf-emoji').value.trim();
+  const title = document.getElementById('mf-title').value.trim();
+  const type  = document.getElementById('mf-type').value;
+  const note  = document.getElementById('mf-note').value.trim();
+  if (!title) return;
+  movies.push({ id: Date.now(), emoji, title, type, note, votes: 0, watched: false });
+  renderMovies();
+  saveToCloud();
+  document.getElementById('mf-emoji').value = '';
+  document.getElementById('mf-title').value = '';
+  document.getElementById('mf-note').value = '';
+  toggleForm('movies-form');
+}
+
+const CAT_LABELS = { bar:'Bar', mat:'Yemek', sev:'Gezilecek Yer', akt:'Aktivite', kul:'Eğlenceli' };
+const CAT_CSS    = { bar:'cat-bar', mat:'cat-mat', sev:'cat-sev', akt:'cat-akt', kul:'cat-kul' };
+let _tipsFilter = 'alla';
 
 function renderTips() {
   const el = document.getElementById('tips-list');
@@ -1564,7 +1327,7 @@ function renderTips() {
 
 function filterTips(cat) {
   _tipsFilter = cat;
-  document.querySelectorAll('.tips-cat-btn').forEach(b => {
+  document.querySelectorAll('#tab-tips .tips-cat-btn').forEach(b => {
     b.classList.toggle('active', b.textContent.trim().includes(cat === 'alla' ? 'Hepsi' : CAT_LABELS[cat] || cat));
   });
   renderTips();
@@ -1575,6 +1338,7 @@ function voteTip(id) {
   renderTips();
   saveToCloud();
 }
+
 
 /* ══════════════ PHOTOS ══════════════ */
 
@@ -1812,41 +1576,6 @@ function toggleForm(id) {
   f.classList.toggle('open');
 }
 
-function addEvent(day) {
-  const prefix = day === 'friday' ? 'ff' : 'sf2';
-  const time  = document.getElementById(prefix + '-time').value.trim();
-  const emoji = document.getElementById(prefix + '-emoji').value.trim();
-  const title = document.getElementById(prefix + '-title').value.trim();
-  const color = document.getElementById(prefix + '-color').value;
-  if (!title) return;
-  const arr = day === 'friday' ? friday : saturday;
-  arr.push({ id: Date.now(), time: time || '—', emoji: emoji || '📌', title, color });
-  if (day === 'friday') friday = sortByTime(friday);
-  else saturday = sortByTime(saturday);
-  renderEvents(day);
-  saveToCloud();
-  document.getElementById(prefix + '-time').value = '';
-  document.getElementById(prefix + '-emoji').value = '';
-  document.getElementById(prefix + '-title').value = '';
-  toggleForm(day + '-form');
-}
-
-function addDartItem() {
-  const min  = parseInt(document.getElementById('df-min').value) || 0;
-  const max  = parseInt(document.getElementById('df-max').value) || 0;
-  const name = document.getElementById('df-name').value.trim();
-  const desc = document.getElementById('df-desc').value.trim();
-  if (!name) return;
-  darts.push({ id: Date.now(), min, max, name, desc });
-  renderDarts();
-  saveToCloud();
-  document.getElementById('df-min').value = '';
-  document.getElementById('df-max').value = '';
-  document.getElementById('df-name').value = '';
-  document.getElementById('df-desc').value = '';
-  toggleForm('dart-form');
-}
-
 function addTip() {
   const emoji = document.getElementById('tf-emoji').value.trim();
   const name  = document.getElementById('tf-name').value.trim();
@@ -1867,36 +1596,24 @@ function addTip() {
 function openEdit(list, id) {
   _editCtx = { list, id };
   const fields = document.getElementById('edit-modal-fields');
-  const titles = { friday: 'Etkinliği düzenle', saturday: 'Etkinliği düzenle', darts: 'Görevi düzenle', tips: 'Öneriyi düzenle', bull: 'Merkezi düzenle' };
+  const titles = { movies: 'Film/diziyi düzenle', tips: 'Öneriyi düzenle' };
   document.getElementById('edit-modal-title').textContent = titles[list] || 'Düzenle';
 
   let item;
-  if (list === 'friday') item = friday.find(x => x.id === id);
-  else if (list === 'saturday') item = saturday.find(x => x.id === id);
-  else if (list === 'darts') item = darts.find(x => x.id === id);
+  if (list === 'movies') item = movies.find(x => x.id === id);
   else if (list === 'tips') item = tips.find(x => x.id === id);
-  else if (list === 'bull') item = bull.find(x => x.id === id);
 
-  if (list === 'darts') {
+  if (list === 'movies') {
+    const types = ['film','dizi'];
     fields.innerHTML = `
       <div class="form-row">
-        <div class="form-field" style="max-width:90px"><label>Min</label><input id="ef-min" type="number" min="0" max="180" value="${item.min ?? 0}"></div>
-        <div class="form-field" style="max-width:90px"><label>Maks</label><input id="ef-max" type="number" min="0" max="180" value="${item.max ?? 0}"></div>
-        <div class="form-field"><label>İsim</label><input id="ef-name" value="${item.name}"></div>
+        <div class="form-field" style="max-width:70px"><label>Emoji</label><input id="ef-emoji" value="${item.emoji||''}"></div>
+        <div class="form-field"><label>İsim</label><input id="ef-title" value="${item.title}"></div>
       </div>
-      <div class="form-field"><label>Açıklama</label><textarea id="ef-desc" rows="2">${item.desc}</textarea></div>`;
-  } else if (list === 'friday' || list === 'saturday') {
-    const colors = ['hl','tr','br','rd','pu','pk'];
-    const colorNames = { hl:'Altın', tr:'Mavi', br:'Turkuaz', rd:'Kiremit', pu:'Mor', pk:'Pembe' };
-    fields.innerHTML = `
-      <div class="form-row">
-        <div class="form-field" style="max-width:80px"><label>Saat</label><input id="ef-time" value="${item.time}"></div>
-        <div class="form-field" style="max-width:60px"><label>Emoji</label><input id="ef-emoji" value="${item.emoji}"></div>
-        <div class="form-field"><label>Başlık</label><input id="ef-title" value="${item.title}"></div>
+      <div class="form-field"><label>Tür</label>
+        <select id="ef-type">${types.map(t => `<option value="${t}"${item.type===t?' selected':''}>${MOVIE_TYPE_LABELS[t]}</option>`).join('')}</select>
       </div>
-      <div class="form-field"><label>Renk</label>
-        <select id="ef-color">${colors.map(c => `<option value="${c}"${item.color===c?' selected':''}>${colorNames[c]}</option>`).join('')}</select>
-      </div>`;
+      <div class="form-field"><label>Not</label><textarea id="ef-desc" rows="2">${item.note||''}</textarea></div>`;
   } else if (list === 'tips') {
     const cats = ['bar','mat','sev','akt','kul'];
     fields.innerHTML = `
@@ -1911,16 +1628,6 @@ function openEdit(list, id) {
         <div class="form-field"><label>Bölge</label><input id="ef-area" value="${item.area||''}"></div>
       </div>
       <div class="form-field"><label>Not</label><textarea id="ef-desc" rows="2">${item.note||''}</textarea></div>`;
-  } else if (list === 'bull') {
-    fields.innerHTML = `
-      <div class="form-field"><label>${item.title}</label><textarea id="ef-desc" rows="3" placeholder="Ne olduğunu anlat...">${item.desc || ''}</textarea></div>`;
-  } else {
-    fields.innerHTML = `
-      <div class="form-row">
-        <div class="form-field" style="max-width:100px"><label>Saat</label><input id="ef-time" value="${item.time}"></div>
-        <div class="form-field"><label>Başlık</label><input id="ef-title" value="${item.title}"></div>
-      </div>
-      <div class="form-field"><label>Açıklama</label><textarea id="ef-desc" rows="2">${item.desc}</textarea></div>`;
   }
 
   document.getElementById('edit-modal').classList.add('open');
@@ -1940,34 +1647,27 @@ function saveEdit() {
   function patch(arr) {
     return arr.map(x => {
       if (x.id !== id) return x;
-      if (list === 'darts') return { ...x, min: parseInt(get('ef-min')) || x.min, max: parseInt(get('ef-max')) || x.max, name: get('ef-name') || x.name, desc: get('ef-desc') };
-      if (list === 'friday' || list === 'saturday') return { ...x, time: get('ef-time') || x.time, emoji: get('ef-emoji') || x.emoji, title: get('ef-title') || x.title, color: get('ef-color') || x.color };
+      if (list === 'movies') return { ...x, emoji: get('ef-emoji') || x.emoji, title: get('ef-title') || x.title, type: get('ef-type') || x.type, note: get('ef-desc') };
       if (list === 'tips') return { ...x, emoji: get('ef-emoji') || x.emoji, name: get('ef-title') || x.name, cat: get('ef-cat') || x.cat, area: get('ef-area'), note: get('ef-desc') };
-      if (list === 'bull') return { ...x, desc: get('ef-desc') };
-      return { ...x, time: get('ef-time') || x.time, title: get('ef-title') || x.title, desc: get('ef-desc') };
+      return x;
     });
   }
 
-  if (list === 'friday') { friday = patch(friday); renderEvents('friday'); }
-  else if (list === 'saturday') { saturday = patch(saturday); renderEvents('saturday'); }
-  else if (list === 'darts') { darts = patch(darts); renderDarts(); }
+  if (list === 'movies') { movies = patch(movies); renderMovies(); }
   else if (list === 'tips') { tips = patch(tips); renderTips(); }
-  else if (list === 'bull') { bull = patch(bull); renderBull(); }
 
   closeEdit();
   saveToCloud();
 }
 
 function deleteItem(list, id) {
-  if (list === 'friday') { friday = friday.filter(x => x.id !== id); renderEvents('friday'); }
-  else if (list === 'saturday') { saturday = saturday.filter(x => x.id !== id); renderEvents('saturday'); }
-  else if (list === 'darts') { darts = darts.filter(x => x.id !== id); renderDarts(); }
+  if (list === 'movies') { movies = movies.filter(x => x.id !== id); renderMovies(); }
   else if (list === 'tips') { tips = tips.filter(x => x.id !== id); renderTips(); }
   saveToCloud();
 }
 
 function switchTab(id) {
-  const tabIds = ['programme','dart','tips','photos','sos'];
+  const tabIds = ['movies','tips','photos','sos'];
   document.querySelectorAll('.tab-btn').forEach((b, i) => {
     b.classList.toggle('active', tabIds[i] === id);
   });
@@ -2142,50 +1842,11 @@ function loadSosFromCache() {
 }
 
 const DEFAULT_DATA = {
-  friday: [
-    { id:1, time:'08:00', emoji:'🫵', title:'Ludvig\'i kaçır', color:'hl' },
-    { id:2, time:'09:00', emoji:'🚗', title:'Arlanda\'ya git', color:'tr' },
-    { id:3, time:'12:25', emoji:'✈️', title:'Uçuş → Köln', color:'tr' },
-    { id:4, time:'14:30', emoji:'🛬', title:'Köln\'e varış', color:'tr' },
-    { id:5, time:'15:30', emoji:'🍺', title:'Altstadt & Kölsch', color:'br', dart:true, dur:'15:30 – 20:00' },
-    { id:6, time:'20:00', emoji:'🥩', title:'Peters Brauhaus', color:'rd' }
-  ],
-  saturday: [
-    { id:1, time:'10:30', emoji:'🥐', title:'Kahvaltı — Zadem', color:'hl' },
-    { id:2, time:'14:30', emoji:'🪓', title:'Balta atma', color:'rd', dur:'14:30 – 16:15' },
-    { id:3, time:'16:15', emoji:'🏨', title:'Otele dönüş', color:'tr' },
-    { id:4, time:'17:30', emoji:'🧠', title:'Bilgi yarışması', color:'pu' },
-    { id:5, time:'20:30', emoji:'🍽️', title:'IKIGAI', color:'pk' }
-  ],
-  darts: [
-    { id:1,  min:0,   max:9,   name:'', desc:'' },
-    { id:2,  min:10,  max:19,  name:'', desc:'' },
-    { id:3,  min:20,  max:29,  name:'', desc:'' },
-    { id:4,  min:30,  max:39,  name:'', desc:'' },
-    { id:5,  min:40,  max:49,  name:'', desc:'' },
-    { id:6,  min:50,  max:59,  name:'', desc:'' },
-    { id:7,  min:60,  max:69,  name:'', desc:'' },
-    { id:8,  min:70,  max:79,  name:'', desc:'' },
-    { id:9,  min:80,  max:89,  name:'', desc:'' },
-    { id:10, min:90,  max:99,  name:'', desc:'' },
-    { id:11, min:100, max:109, name:'', desc:'' },
-    { id:12, min:110, max:119, name:'', desc:'' },
-    { id:13, min:120, max:129, name:'', desc:'' },
-    { id:14, min:130, max:139, name:'', desc:'' },
-    { id:15, min:140, max:149, name:'', desc:'' },
-    { id:16, min:150, max:159, name:'', desc:'' },
-    { id:17, min:160, max:169, name:'', desc:'' },
-    { id:18, min:170, max:179, name:'', desc:'' },
-    { id:19, min:180, max:180, name:'', desc:'' }
-  ],
-  tips: [],
-  bull: [
-    { id:'bull-outer', title:'Bull — 25p', sub:'Dış halka', desc:'' },
-    { id:'bull-inner', title:'Bullseye — 50p', sub:'Tam merkez', desc:'' }
-  ]
+  movies: [],
+  tips: []
 };
 
-const CACHE_KEY = 'bktlist_cache_v1';
+const CACHE_KEY = 'bktlist_cache_v2';
 
 function loadCache() {
   try { const v = localStorage.getItem(CACHE_KEY); return v ? JSON.parse(v) : null; } catch(e) { return null; }
@@ -2195,16 +1856,10 @@ function writeCache(data) {
 }
 
 function applyData(d) {
-  friday   = d.friday   && d.friday.length   ? d.friday   : DEFAULT_DATA.friday;
-  saturday = d.saturday && d.saturday.length ? d.saturday : DEFAULT_DATA.saturday;
-  darts    = d.darts && d.darts.length && d.darts[0].min !== undefined ? d.darts : DEFAULT_DATA.darts;
-  tips     = d.tips     ? d.tips             : DEFAULT_DATA.tips;
-  bull     = d.bull     && d.bull.length     ? d.bull     : DEFAULT_DATA.bull;
-  renderEvents('friday');
-  renderEvents('saturday');
-  renderDarts();
+  movies = d.movies ? d.movies : DEFAULT_DATA.movies;
+  tips   = d.tips   ? d.tips   : DEFAULT_DATA.tips;
+  renderMovies();
   renderTips();
-  renderBull();
 }
 
 const cached = loadCache();
@@ -2215,7 +1870,7 @@ if (cached) {
 fetch(DB_URL)
   .then(r => r.json())
   .then(d => {
-    const seeded = !d || !d.friday;
+    const seeded = !d;
     if (seeded) {
       applyData(DEFAULT_DATA);
       writeCache(DEFAULT_DATA);
@@ -2237,4 +1892,3 @@ loadSosFromCache();
 </script>
 </body>
 </html>
-
