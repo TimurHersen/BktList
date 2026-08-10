@@ -942,11 +942,12 @@
   <!-- MOVIES / FİLMLER & DİZİLER -->
   <div class="panel active" id="tab-movies">
     <p class="sec-label">Ne izlesek?</p>
-    <div class="tips-cats">
+    <div class="tips-cats" id="movies-type-filters">
       <button class="tips-cat-btn active" onclick="filterMovies('hepsi')">Hepsi</button>
       <button class="tips-cat-btn" onclick="filterMovies('film')">🎬 Film</button>
       <button class="tips-cat-btn" onclick="filterMovies('dizi')">📺 Dizi</button>
     </div>
+    <div class="tips-cats" id="movies-genre-filters" style="display:none"></div>
     <div class="tips-list" id="movies-list"></div>
     <button class="add-btn" onclick="toggleForm('movies-form')" style="margin-top:18px"><span class="add-btn-icon">+</span> Film/dizi ekle</button>
     <div class="add-form" id="movies-form">
@@ -1102,6 +1103,23 @@ let _mfOmdbData = null; // holds fetched IMDb info for the movie currently being
 let movies = [], tips = [];
 let photos = []; // [{ id (firebase key), data (base64), uploaded (ts) }]
 let _moviesFilter = 'hepsi';
+let _moviesGenreFilter = 'hepsi';
+
+const GENRE_TR = {
+  'Action': 'Aksiyon', 'Adventure': 'Macera', 'Animation': 'Animasyon',
+  'Biography': 'Biyografi', 'Comedy': 'Komedi', 'Crime': 'Suç',
+  'Documentary': 'Belgesel', 'Drama': 'Dram', 'Family': 'Aile',
+  'Fantasy': 'Fantastik', 'Film-Noir': 'Film Noir', 'Game-Show': 'Yarışma',
+  'History': 'Tarih', 'Horror': 'Korku', 'Music': 'Müzik', 'Musical': 'Müzikal',
+  'Mystery': 'Gizem', 'News': 'Haber', 'Reality-TV': 'Reality TV',
+  'Romance': 'Romantik', 'Sci-Fi': 'Bilim Kurgu', 'Short': 'Kısa Film',
+  'Sport': 'Spor', 'Talk-Show': 'Talk Show', 'Thriller': 'Gerilim',
+  'War': 'Savaş', 'Western': 'Vahşi Batı'
+};
+function genreLabel(g) { return GENRE_TR[g] || g; }
+function splitGenres(genreStr) {
+  return (genreStr || '').split(',').map(g => g.trim()).filter(Boolean);
+}
 
 function showStatus(msg, ok = true) {
   const el = document.getElementById('save-status');
@@ -1136,9 +1154,17 @@ const MOVIE_TYPE_ICON   = { film: '🎬', dizi: '📺' };
 
 function renderMovies() {
   const el = document.getElementById('movies-list');
-  const filtered = _moviesFilter === 'hepsi' ? movies : movies.filter(m => m.type === _moviesFilter);
+  const filtered = movies.filter(m => {
+    const typeOk = _moviesFilter === 'hepsi' || m.type === _moviesFilter;
+    const genreOk = _moviesGenreFilter === 'hepsi' || splitGenres(m.genre).includes(_moviesGenreFilter);
+    return typeOk && genreOk;
+  });
+  renderMovieGenreFilters();
   if (!filtered.length) {
-    el.innerHTML = `<div style="padding:32px 0;text-align:center;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;color:#6B7C8C">Henüz film/dizi önerisi yok — bir tane ekle! 🍿</div>`;
+    const msg = movies.length
+      ? 'Bu filtreye uyan film/dizi yok.'
+      : 'Henüz film/dizi önerisi yok — bir tane ekle! 🍿';
+    el.innerHTML = `<div style="padding:32px 0;text-align:center;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;color:#6B7C8C">${msg}</div>`;
     return;
   }
   el.innerHTML = filtered.map(m => `
@@ -1153,7 +1179,7 @@ function renderMovies() {
         <div class="tip-meta">
           <span class="cat-badge ${MOVIE_TYPE_CSS[m.type] || 'cat-film'}">${MOVIE_TYPE_LABELS[m.type] || m.type}</span>
           ${m.imdbRating ? `<span class="imdb-badge">★ ${m.imdbRating}</span>` : ''}
-          ${m.genre ? `<span class="tip-genre">${m.genre}</span>` : ''}
+          ${m.genre ? `<span class="tip-genre">${splitGenres(m.genre).map(genreLabel).join(', ')}</span>` : ''}
         </div>
         ${m.note ? `<div class="tip-note">${m.note}</div>` : ''}
         ${m.imdbID ? `<a class="imdb-link" href="https://www.imdb.com/title/${m.imdbID}/" target="_blank" rel="noopener">IMDb'de gör →</a>` : ''}
@@ -1166,9 +1192,29 @@ function renderMovies() {
     </div>`).join('');
 }
 
+function renderMovieGenreFilters() {
+  const wrap = document.getElementById('movies-genre-filters');
+  const genres = Array.from(new Set(movies.flatMap(m => splitGenres(m.genre)))).sort((a, b) => genreLabel(a).localeCompare(genreLabel(b), 'tr'));
+  if (!genres.length) {
+    wrap.style.display = 'none';
+    wrap.innerHTML = '';
+    if (_moviesGenreFilter !== 'hepsi') _moviesGenreFilter = 'hepsi';
+    return;
+  }
+  if (!genres.includes(_moviesGenreFilter)) _moviesGenreFilter = 'hepsi';
+  wrap.style.display = 'flex';
+  wrap.innerHTML = `<button class="tips-cat-btn${_moviesGenreFilter === 'hepsi' ? ' active' : ''}" onclick="filterMoviesGenre('hepsi')">Tüm türler</button>` +
+    genres.map(g => `<button class="tips-cat-btn${_moviesGenreFilter === g ? ' active' : ''}" onclick="filterMoviesGenre('${g.replace(/'/g, "\\'")}')">${genreLabel(g)}</button>`).join('');
+}
+
+function filterMoviesGenre(g) {
+  _moviesGenreFilter = g;
+  renderMovies();
+}
+
 function filterMovies(type) {
   _moviesFilter = type;
-  document.querySelectorAll('#tab-movies .tips-cat-btn').forEach(b => {
+  document.querySelectorAll('#movies-type-filters .tips-cat-btn').forEach(b => {
     b.classList.toggle('active', b.textContent.trim().includes(type === 'hepsi' ? 'Hepsi' : MOVIE_TYPE_LABELS[type] || type));
   });
   renderMovies();
@@ -1189,10 +1235,24 @@ function toggleWatched(id) {
 async function fetchOmdbInfo(title, year) {
   let url = `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&t=${encodeURIComponent(title)}`;
   if (year) url += `&y=${encodeURIComponent(year)}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('OMDb servisine ulaşılamadı');
-  const data = await res.json();
-  if (data.Response === 'False') throw new Error(data.Error || 'Bulunamadı');
+
+  let res;
+  try {
+    res = await fetch(url);
+  } catch (e) {
+    throw new Error('Ağa ulaşılamadı: ' + e.message);
+  }
+
+  let data = null;
+  try {
+    data = await res.json();
+  } catch (e) {
+    throw new Error('Sunucu geçersiz yanıt verdi (HTTP ' + res.status + ')');
+  }
+
+  if (!res.ok || data.Response === 'False') {
+    throw new Error(data.Error || ('HTTP ' + res.status));
+  }
   return data;
 }
 
