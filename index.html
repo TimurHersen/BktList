@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BktList</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @font-face {
+    font-family: "Orbit Lounge Wonk";
+    src: url("OrbitLoungeWonk-Regular.woff2") format("woff2"),
+         url("OrbitLoungeWonk-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    /* — Deco night — */
+    --bg:        #17140F;
+    --bg-deep:   #0F0D0A;
+    --card:      #221E17;
+    --card-soft: #2B261D;
+
+    --ink:       #EFE6D5;
+    --ink-soft:  #C9BFA9;
+    --muted:     #8A8378;
+
+    /* — Gold & accents — */
+    --gold:       #C9A24D;
+    --gold-deep:  #9C7A2E;
+    --gold-light: #E3C77A;
+    --rose:       #E69FB5;
+    --rose-deep:  #C97690;
+    --jade:       #5E9C8D;
+    --jade-deep:  #457468;
+
+    --shadow:    0 14px 36px rgba(0,0,0,0.5);
+    --shadow-sm: 0 6px 16px rgba(0,0,0,0.45);
+    --shadow-lg: 0 20px 50px rgba(0,0,0,0.6);
+    --line:      1.5px solid var(--gold);
+    --line-soft: 1px solid rgba(201,162,77,0.32);
+
+    --radius:      3px;
+    --radius-sm:   2px;
+    --radius-pill: 999px;
+
+    --font-display: "Orbit Lounge Wonk", serif;
+    --font-head:    'Space Grotesk', system-ui, sans-serif;
+    --font-body:    'Inter', system-ui, sans-serif;
+    --font-mono:    'Space Mono', ui-monospace, monospace;
+  }
+
+  html, body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-weight: 400;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,162,77,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,162,77,0.05) 1px, transparent 1px);
+    background-size: 34px 34px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .bg-art { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; opacity: .55; }
+  .bg-art svg { position: absolute; }
+
+  /* ─── HEADER ─── */
+  .header {
+    padding: 58px 20px 0;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .deco-arch {
+    width: 240px;
+    height: 130px;
+    margin: 0 auto 6px;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-size: 68px;
+    font-weight: 400;
+    line-height: 0.9;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+    margin: -18px 0 6px;
+    text-shadow: 0 2px 0 var(--gold-deep);
+  }
+  .wordmark span { display: inline-block; }
+  .header-rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 14px 0 12px;
+  }
+  .header-rule span.line { flex: 1; max-width: 76px; height: 1.5px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .header-gem {
+    font-size: 11px;
+    color: var(--rose);
+    flex: none !important;
+    letter-spacing: 4px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+  .header-sub {
+    font-size: 12px;
+    color: var(--gold-light);
+    font-family: var(--font-head);
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  #save-status {
+    display: block;
+    margin-top: 12px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--gold-light);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  /* ─── TABS ─── */
+  .tabs {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 32px 20px 0;
+    position: relative;
+    z-index: 1;
+  }
+  .tab-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 4px 4px 10px;
+  }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    background: var(--card);
+    border: var(--line-soft);
+    color: var(--ink-soft);
+    font-size: 12px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 11px 18px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-radius: var(--radius);
+    transition: transform 0.12s, border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .tab-btn:hover { transform: translateY(-2px); color: var(--ink); border-color: var(--gold); }
+  .tab-btn.active {
+    background: var(--gold);
+    color: var(--bg-deep);
+    border-color: var(--gold);
+  }
+
+  @media (hover: none) {
+    .deletable .del-btn, .deletable .edit-btn { display: flex; }
+  }
+
+  /* ─── PANELS ─── */
+  .panels {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 20px 100px;
+    position: relative;
+    z-index: 1;
+  }
+  .panel { display: none; padding-top: 26px; }
+  .panel.active { display: block; animation: fadein 0.25s ease; }
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .sec-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    padding-bottom: 8px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(201,162,77,0.35);
+    width: 100%;
+  }
+  .divider {
+    border: none;
+    height: 2px;
+    margin: 30px 0;
+    opacity: 0.6;
+    background: repeating-linear-gradient(135deg, var(--gold) 0 5px, transparent 5px 10px);
+  }
+  .tip {
+    background: var(--card-soft);
+    border: var(--line-soft);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--ink);
+    line-height: 1.55;
+    font-family: var(--font-body);
+    font-weight: 500;
+  }
+
+  /* ─── DELETABLE WRAPPER ─── */
+  .deletable { position: relative; }
+  .del-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: var(--rose-deep);
+    border: 2px solid var(--bg);
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    font-family: var(--font-body);
+    box-shadow: var(--shadow-sm);
+  }
+  .edit-btn {
+    position: absolute;
+    top: -8px;
+    right: 21px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid var(--bg);
+    color: var(--bg-deep);
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    font-family: var(--font-body);
+    box-shadow: var(--shadow-sm);
+  }
+  .deletable:hover .del-btn,
+  .deletable:hover .edit-btn { display: flex; }
+
+  /* ─── EDIT MODAL ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,13,10,0.78);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card);
+    border: var(--line);
+    border-radius: var(--radius);
+    padding: 22px;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  /* ─── ADD BUTTON ─── */
+  .add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: transparent;
+    border: 1.5px dashed rgba(201,162,77,0.5);
+    border-radius: var(--radius);
+    color: var(--gold-light);
+    font-size: 12px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .add-btn:hover { background: var(--card-soft); color: var(--ink); border-color: var(--gold); }
+  .add-btn-icon { font-size: 16px; font-weight: 700; }
+
+  /* ─── INLINE FORM ─── */
+  .add-form {
+    background: var(--card);
+    border: var(--line-soft);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-top: 12px;
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  .add-form.open { display: flex; }
+  .form-row { display: flex; gap: 10px; }
+  .form-field { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+  .form-field label {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+  }
+  .form-field input,
+  .form-field textarea,
+  .form-field select {
+    background: var(--bg-deep);
+    border: var(--line-soft);
+    border-radius: var(--radius-sm);
+    color: var(--ink);
+    font-size: 14px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    padding: 8px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+    resize: none;
+  }
+  .form-field input::placeholder,
+  .form-field textarea::placeholder { color: var(--muted); }
+  .form-field input:focus,
+  .form-field textarea:focus,
+  .form-field select:focus { border-color: var(--gold); }
+  .form-field select option { background: var(--bg-deep); color: var(--ink); }
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  .btn-save {
+    background: var(--gold);
+    border: 1.5px solid var(--gold);
+    color: var(--bg-deep);
+    font-size: 12px;
+    font-family: var(--font-head);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 9px 18px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.1s;
+  }
+  .btn-save:hover { transform: translateY(-1px); }
+  .btn-save:active { transform: translateY(0); }
+  .btn-cancel {
+    background: transparent;
+    border: var(--line-soft);
+    color: var(--ink-soft);
+    font-size: 12px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 9px 18px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: transform 0.1s, border-color .15s;
+  }
+  .btn-cancel:hover { transform: translateY(-1px); border-color: var(--gold); }
+
+  /* ─── MOVIES / FİLMLER & DİZİLER ─── */
+  .movie-watched {
+    opacity: 0.5;
+  }
+  .movie-watched .tip-name {
+    text-decoration: line-through;
+  }
+  .watched-btn {
+    background: var(--card-soft);
+    border: 1.5px solid rgba(201,162,77,0.4);
+    cursor: pointer;
+    font-size: 11.5px;
+    padding: 5px 10px;
+    border-radius: var(--radius-pill);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    color: var(--ink-soft);
+    transition: transform 0.1s, background 0.15s, color 0.15s;
+  }
+  .watched-btn:hover { transform: translateY(-1px); }
+  .watched-btn.watched { background: var(--jade); color: var(--bg-deep); border-color: var(--jade); }
+
+  .cat-film { background: var(--gold);  color: var(--bg-deep); }
+  .cat-dizi { background: var(--rose);  color: var(--bg-deep); }
+
+  /* ─── TIPS / ÖNERİLER ─── */
+  .tips-cats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .tips-cat-btn {
+    background: var(--card);
+    border: var(--line-soft);
+    border-radius: var(--radius-pill);
+    color: var(--ink-soft);
+    font-size: 11px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 5px 14px;
+    cursor: pointer;
+    transition: transform 0.1s, background 0.15s, color 0.15s;
+  }
+  .tips-cat-btn:hover { transform: translateY(-1px); }
+  .tips-cat-btn.active { background: var(--gold); color: var(--bg-deep); border-color: var(--gold); }
+
+  .tips-list { display: flex; flex-direction: column; gap: 12px; }
+  .tip-card {
+    background: var(--card);
+    border: var(--line-soft);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.1s, box-shadow 0.1s, border-color .15s;
+  }
+  .tip-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    border-color: rgba(201,162,77,0.5);
+  }
+  .tip-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    width: 42px;
+    height: 42px;
+    background: var(--bg-deep);
+    border: var(--line-soft);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tip-body { flex: 1; min-width: 0; }
+  .tip-name { font-size: 15px; font-weight: 600; font-family: var(--font-head); color: var(--ink); margin-bottom: 5px; }
+  .tip-meta { font-size: 11px; font-family: var(--font-mono); font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .tip-note { font-size: 13px; font-family: var(--font-body); font-weight: 500; color: var(--ink-soft); line-height: 1.55; }
+
+  .cat-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+  }
+  .cat-bar { background: var(--gold-light); color: var(--bg-deep); }
+  .cat-mat { background: var(--jade);       color: var(--bg-deep); }
+  .cat-sev { background: var(--rose);       color: var(--bg-deep); }
+  .cat-akt { background: var(--gold-deep);  color: var(--ink); }
+  .cat-kul { background: var(--rose-deep);  color: var(--ink); }
+
+  .tip-voted { display: flex; align-items: center; gap: 6px; margin-left: auto; flex-shrink: 0; }
+  .vote-btn {
+    background: var(--card-soft);
+    border: 1.5px solid rgba(201,162,77,0.4);
+    cursor: pointer;
+    font-size: 13px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s, background 0.15s;
+    padding: 0;
+  }
+  .vote-btn:hover { transform: scale(1.08); background: var(--gold); }
+  .vote-btn.voted { background: var(--gold); }
+  .vote-count { font-size: 13px; font-family: var(--font-mono); font-weight: 700; color: var(--gold-light); min-width: 16px; text-align: center; }
+
+  /* ═══════════ PHOTOS / RESİMLER ═══════════ */
+  .photo-upload-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .photo-count-pill {
+    align-self: flex-start;
+    display: inline-block;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    background: var(--gold);
+    color: var(--bg-deep);
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    letter-spacing: 0.08em;
+  }
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .photo-tile {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border: var(--line-soft);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    background: var(--card);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .photo-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .photo-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .photo-tile .del-btn { display: none; }
+  .photo-tile:hover .del-btn { display: flex; }
+  @media (hover: none) {
+    .photo-tile .del-btn { display: flex; }
+  }
+  .photo-pending {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border: 1.5px dashed rgba(201,162,77,0.5);
+    border-radius: var(--radius-sm);
+    background: var(--card-soft);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .photo-pending::before {
+    content: '';
+    width: 26px;
+    height: 26px;
+    border: 2.5px solid var(--gold);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .photo-empty {
+    grid-column: 1 / -1;
+    padding: 40px 20px;
+    text-align: center;
+    border: 1.5px dashed rgba(201,162,77,0.5);
+    border-radius: var(--radius);
+    background: var(--card-soft);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .photo-empty .ce { font-size: 34px; display: block; margin-bottom: 8px; }
+
+  /* ─── SLIDESHOW LIGHTBOX ─── */
+  .slideshow {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(10, 8, 6, 0.94);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .slideshow.open { display: flex; }
+  .slideshow-counter {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--card);
+    color: var(--ink);
+    border: var(--line);
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    letter-spacing: 0.1em;
+    z-index: 2;
+    box-shadow: var(--shadow-sm);
+  }
+  .slideshow-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--rose-deep);
+    border: var(--line);
+    color: var(--ink);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 2;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+  }
+  .slideshow-stage {
+    position: relative;
+    width: 100%;
+    max-width: 720px;
+    max-height: calc(100vh - 160px);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .slideshow-img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border: var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    background: var(--card);
+    transition: opacity 0.25s;
+  }
+  .slideshow-img.fading { opacity: 0; }
+  .slideshow-tap {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40%;
+    cursor: pointer;
+    z-index: 1;
+  }
+  .slideshow-tap.left { left: 0; }
+  .slideshow-tap.right { right: 0; }
+  .slideshow-controls {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 2;
+  }
+  .ss-btn {
+    background: var(--card);
+    border: var(--line);
+    color: var(--ink);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    transition: transform 0.1s;
+  }
+  .ss-btn:hover { transform: translateY(-1px); }
+  .ss-btn.play { background: var(--gold); color: var(--bg-deep); }
+  .ss-btn.play.playing { background: var(--jade); color: var(--bg-deep); }
+
+  @media (max-width: 480px) {
+    .header { padding: 42px 16px 0; }
+    .deco-arch { width: 190px; height: 104px; }
+    .wordmark { font-size: 48px; margin-top: -12px; }
+    .header-sub { font-size: 10px; }
+    .tabs { padding: 22px 14px 0; }
+    .tab-btn { padding: 9px 14px; font-size: 11px; }
+    .panels { padding: 0 14px 80px; }
+    .sec-label { font-size: 10px; }
+    .tips-cats { gap: 6px; }
+    .tips-cat-btn { font-size: 10px; padding: 4px 10px; }
+    .tip-card { padding: 12px; gap: 10px; }
+    .tip-icon { font-size: 19px; width: 36px; height: 36px; }
+    .form-row { gap: 8px; }
+    .add-form { padding: 12px; }
+    .modal { padding: 16px; }
+    .modal-title { font-size: 20px; }
+    body::before { background-size: 24px 24px; }
+    .photo-grid { gap: 8px; }
+    .slideshow { padding: 12px; }
+    .slideshow-close { width: 36px; height: 36px; font-size: 17px; top: 14px; right: 14px; }
+    .slideshow-counter { top: 14px; font-size: 10px; padding: 5px 12px; }
+    .ss-btn { width: 42px; height: 42px; font-size: 18px; }
+  }
+  @media (max-width: 360px) {
+    .wordmark { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ BACKGROUND ART (art deco fans & chevrons) ═══════════ -->
+<div class="bg-art" aria-hidden="true">
+
+  <!-- Corner sunburst — top left -->
+  <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="left:-70px;top:-70px;width:min(240px,50vw);height:min(240px,50vw);opacity:.5">
+    <g stroke="#C9A24D" stroke-width="1.4" fill="none">
+      <path d="M 220 220 L 40 0"/>
+      <path d="M 220 220 L 70 0"/>
+      <path d="M 220 220 L 100 0"/>
+      <path d="M 220 220 L 130 0"/>
+      <path d="M 220 220 L 160 0"/>
+      <path d="M 220 220 L 0 40"/>
+      <path d="M 220 220 L 0 70"/>
+      <path d="M 220 220 L 0 100"/>
+      <path d="M 220 220 L 0 130"/>
+      <path d="M 220 220 L 0 160"/>
+      <circle cx="220" cy="220" r="60" opacity="0.6"/>
+      <circle cx="220" cy="220" r="100" opacity="0.35"/>
+    </g>
+  </svg>
+
+  <!-- Corner sunburst — bottom right -->
+  <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="right:-70px;bottom:-70px;width:min(240px,50vw);height:min(240px,50vw);opacity:.5">
+    <g stroke="#C9A24D" stroke-width="1.4" fill="none">
+      <path d="M 0 0 L 180 220"/>
+      <path d="M 0 0 L 150 220"/>
+      <path d="M 0 0 L 120 220"/>
+      <path d="M 0 0 L 90 220"/>
+      <path d="M 0 0 L 60 220"/>
+      <path d="M 0 0 L 220 180"/>
+      <path d="M 0 0 L 220 150"/>
+      <path d="M 0 0 L 220 120"/>
+      <path d="M 0 0 L 220 90"/>
+      <path d="M 0 0 L 220 60"/>
+      <circle cx="0" cy="0" r="60" opacity="0.6"/>
+      <circle cx="0" cy="0" r="100" opacity="0.35"/>
+    </g>
+  </svg>
+
+  <!-- Stepped ziggurat — mid left -->
+  <svg viewBox="0 0 100 160" xmlns="http://www.w3.org/2000/svg" style="left:-8px;top:44%;width:min(70px,16vw);height:min(112px,26vw);opacity:.4">
+    <g fill="none" stroke="#E69FB5" stroke-width="1.4">
+      <rect x="60" y="0"  width="40" height="20"/>
+      <rect x="45" y="20" width="55" height="20"/>
+      <rect x="30" y="40" width="70" height="20"/>
+      <rect x="15" y="60" width="85" height="20"/>
+      <rect x="0"  y="80" width="100" height="20"/>
+    </g>
+  </svg>
+
+  <!-- Fan / peacock motif — mid right -->
+  <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="right:-10px;top:20%;width:min(140px,32vw);height:min(140px,32vw);opacity:.4">
+    <g stroke="#C9A24D" stroke-width="1.3" fill="none">
+      <path d="M 80 160 L 80 20"/>
+      <path d="M 80 160 L 40 30"/>
+      <path d="M 80 160 L 120 30"/>
+      <path d="M 80 160 L 10 60"/>
+      <path d="M 80 160 L 150 60"/>
+      <path d="M 40 30 A 90 90 0 0 1 120 30" />
+    </g>
+  </svg>
+</div>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="header">
+  <svg class="deco-arch" viewBox="0 0 240 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g fill="none" stroke="#C9A24D" stroke-width="1.4">
+      <path d="M 20 130 A 100 100 0 0 1 220 130"/>
+      <path d="M 40 130 A 80 80 0 0 1 200 130"/>
+      <path d="M 60 130 A 60 60 0 0 1 180 130"/>
+      <line x1="20" y1="130" x2="20" y2="100"/>
+      <line x1="220" y1="130" x2="220" y2="100"/>
+    </g>
+  </svg>
+  <h1 class="wordmark wobble" data-wobble-y="2" data-wobble-rot="1">BKTLIST</h1>
+  <div class="header-rule">
+    <span class="line"></span>
+    <span class="header-gem">✶ ✶ ✶</span>
+    <span class="line"></span>
+  </div>
+  <p class="header-sub">Birlikte tuttuğumuz liste</p>
+  <span id="save-status"></span>
+</div>
+
+<!-- ═══════════ TABS ═══════════ -->
+<div class="tabs">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('movies')">Filmler &amp; Diziler</button>
+    <button class="tab-btn" onclick="switchTab('tips')">Öneriler</button>
+    <button class="tab-btn" onclick="switchTab('photos')">Resimler 📸</button>
+  </div>
+</div>
+
+<!-- ═══════════ PANELS ═══════════ -->
+<div class="panels">
+
+  <!-- MOVIES / FİLMLER & DİZİLER -->
+  <div class="panel active" id="tab-movies">
+    <p class="sec-label">Ne izlesek?</p>
+    <div class="tips-cats">
+      <button class="tips-cat-btn active" onclick="filterMovies('hepsi')">Hepsi</button>
+      <button class="tips-cat-btn" onclick="filterMovies('film')">🎬 Film</button>
+      <button class="tips-cat-btn" onclick="filterMovies('dizi')">📺 Dizi</button>
+    </div>
+    <div class="tips-list" id="movies-list"></div>
+    <button class="add-btn" onclick="toggleForm('movies-form')" style="margin-top:18px"><span class="add-btn-icon">+</span> Film/dizi ekle</button>
+    <div class="add-form" id="movies-form">
+      <div class="form-row">
+        <div class="form-field" style="max-width:70px">
+          <label>Emoji</label>
+          <input id="mf-emoji" type="text" placeholder="🎬">
+        </div>
+        <div class="form-field">
+          <label>İsim</label>
+          <input id="mf-title" type="text" placeholder="Film/dizi adı">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Tür</label>
+          <select id="mf-type">
+            <option value="film">🎬 Film</option>
+            <option value="dizi">📺 Dizi</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Not</label>
+        <textarea id="mf-note" rows="2" placeholder="Neden izlemeliyiz?"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="toggleForm('movies-form')">İptal</button>
+        <button class="btn-save" onclick="addMovie()">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- TIPS / ÖNERİLER -->
+  <div class="panel" id="tab-tips">
+    <p class="sec-label">Mekanlar, barlar &amp; gezilecek yerler</p>
+    <div class="tips-cats">
+      <button class="tips-cat-btn active" onclick="filterTips('alla')">Hepsi</button>
+      <button class="tips-cat-btn" onclick="filterTips('bar')">🍺 Bar</button>
+      <button class="tips-cat-btn" onclick="filterTips('mat')">🍽️ Yemek</button>
+      <button class="tips-cat-btn" onclick="filterTips('sev')">🏛️ Gezilecek Yer</button>
+      <button class="tips-cat-btn" onclick="filterTips('akt')">🎯 Aktivite</button>
+      <button class="tips-cat-btn" onclick="filterTips('kul')">✨ Eğlenceli</button>
+    </div>
+    <div class="tips-list" id="tips-list"></div>
+    <button class="add-btn" onclick="toggleForm('tips-form')" style="margin-top:18px"><span class="add-btn-icon">+</span> Öneri ekle</button>
+    <div class="add-form" id="tips-form">
+      <div class="form-row">
+        <div class="form-field" style="max-width:70px">
+          <label>Emoji</label>
+          <input id="tf-emoji" type="text" placeholder="🍺">
+        </div>
+        <div class="form-field">
+          <label>İsim / Mekan</label>
+          <input id="tf-name" type="text" placeholder="örn. Brauhaus Pütz">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Kategori</label>
+          <select id="tf-cat">
+            <option value="bar">🍺 Bar</option>
+            <option value="mat">🍽️ Yemek</option>
+            <option value="sev">🏛️ Gezilecek Yer</option>
+            <option value="akt">🎯 Aktivite</option>
+            <option value="kul">✨ Eğlenceli</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Bölge / Bilgi</label>
+          <input id="tf-area" type="text" placeholder="örn. Altstadt">
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Not</label>
+        <textarea id="tf-note" rows="2" placeholder="Neden gitmeye değer?"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="toggleForm('tips-form')">İptal</button>
+        <button class="btn-save" onclick="addTip()">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOTOS / RESİMLER -->
+  <div class="panel" id="tab-photos">
+    <p class="sec-label">Geziden anılar</p>
+    <div class="photo-upload-row">
+      <span class="photo-count-pill" id="photo-count">0 resim</span>
+      <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(event)">
+      <button class="add-btn" onclick="document.getElementById('photo-input').click()">
+        <span class="add-btn-icon">📸</span> Resim yükle
+      </button>
+    </div>
+    <div class="photo-grid" id="photo-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════ EDIT MODAL ═══════════ -->
+<div class="modal-overlay" id="edit-modal" onclick="if(event.target===this)closeEdit()">
+  <div class="modal">
+    <div class="modal-title" id="edit-modal-title">Düzenle</div>
+    <div id="edit-modal-fields" style="display:flex;flex-direction:column;gap:12px;"></div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closeEdit()">İptal</button>
+      <button class="btn-save" onclick="saveEdit()">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SLIDESHOW LIGHTBOX ═══════════ -->
+<div class="slideshow" id="slideshow" onclick="if(event.target===this)closeSlideshow()">
+  <span class="slideshow-counter" id="ss-counter">1 / 1</span>
+  <button class="slideshow-close" onclick="closeSlideshow()" aria-label="Stäng">×</button>
+  <div class="slideshow-stage">
+    <div class="slideshow-tap left" onclick="prevSlide()" aria-label="Föregående"></div>
+    <img class="slideshow-img" id="ss-img" alt="">
+    <div class="slideshow-tap right" onclick="nextSlide()" aria-label="Nästa"></div>
+  </div>
+  <div class="slideshow-controls">
+    <button class="ss-btn" onclick="prevSlide()" aria-label="Föregående">‹</button>
+    <button class="ss-btn play" id="ss-play" onclick="toggleAutoplay()" aria-label="Spela/pausa">▶</button>
+    <button class="ss-btn" onclick="nextSlide()" aria-label="Nästa">›</button>
+  </div>
+</div>
+
+<script src="wobble.js"></script>
+<script>
+/* Firebase Realtime Database — bktlist project */
+const DB_URL = 'https://bktlist-97058-default-rtdb.europe-west1.firebasedatabase.app/data.json';
+const PHOTOS_URL = 'https://bktlist-97058-default-rtdb.europe-west1.firebasedatabase.app/photos.json';
+const PHOTO_BASE = 'https://bktlist-97058-default-rtdb.europe-west1.firebasedatabase.app/photos';
+
+let _editCtx = null;
+
+let movies = [], tips = [];
+let photos = []; // [{ id (firebase key), data (base64), uploaded (ts) }]
+let _moviesFilter = 'hepsi';
+
+function showStatus(msg, ok = true) {
+  const el = document.getElementById('save-status');
+  el.textContent = msg;
+  el.style.color = ok ? '#16374F' : '#B24E30';
+  el.style.opacity = '1';
+  setTimeout(() => { el.style.opacity = '0'; }, 2500);
+}
+
+async function saveToCloud() {
+  showStatus('Kaydediliyor…');
+  try {
+    const res = await fetch(DB_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ movies, tips })
+    });
+    if (!res.ok) throw new Error();
+    await res.json();
+    writeCache({ movies, tips });
+    showStatus('Kaydedildi ✓');
+  } catch(e) {
+    showStatus('Kayıt başarısız ✗', false);
+  }
+}
+
+/* ── renderers ── */
+
+const MOVIE_TYPE_LABELS = { film: 'Film', dizi: 'Dizi' };
+const MOVIE_TYPE_CSS    = { film: 'cat-film', dizi: 'cat-dizi' };
+const MOVIE_TYPE_ICON   = { film: '🎬', dizi: '📺' };
+
+function renderMovies() {
+  const el = document.getElementById('movies-list');
+  const filtered = _moviesFilter === 'hepsi' ? movies : movies.filter(m => m.type === _moviesFilter);
+  if (!filtered.length) {
+    el.innerHTML = `<div style="padding:32px 0;text-align:center;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;color:#6B7C8C">Henüz film/dizi önerisi yok — bir tane ekle! 🍿</div>`;
+    return;
+  }
+  el.innerHTML = filtered.map(m => `
+    <div class="tip-card deletable${m.watched ? ' movie-watched' : ''}">
+      <button class="edit-btn" onclick="openEdit('movies',${m.id})">✎</button>
+      <button class="del-btn" onclick="deleteItem('movies',${m.id})">×</button>
+      <div class="tip-icon">${m.emoji || MOVIE_TYPE_ICON[m.type] || '🎬'}</div>
+      <div class="tip-body">
+        <div class="tip-name">${m.title}</div>
+        <div class="tip-meta">
+          <span class="cat-badge ${MOVIE_TYPE_CSS[m.type] || 'cat-film'}">${MOVIE_TYPE_LABELS[m.type] || m.type}</span>
+        </div>
+        ${m.note ? `<div class="tip-note">${m.note}</div>` : ''}
+      </div>
+      <div class="tip-voted">
+        <button class="watched-btn${m.watched ? ' watched' : ''}" onclick="toggleWatched(${m.id})">${m.watched ? '✓ İzlendi' : 'İzlenecek'}</button>
+        <button class="vote-btn${(m.votes||0) > 0 ? ' voted' : ''}" onclick="voteMovie(${m.id})">👍</button>
+        <span class="vote-count">${m.votes || 0}</span>
+      </div>
+    </div>`).join('');
+}
+
+function filterMovies(type) {
+  _moviesFilter = type;
+  document.querySelectorAll('#tab-movies .tips-cat-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim().includes(type === 'hepsi' ? 'Hepsi' : MOVIE_TYPE_LABELS[type] || type));
+  });
+  renderMovies();
+}
+
+function voteMovie(id) {
+  movies = movies.map(m => m.id === id ? { ...m, votes: (m.votes || 0) + 1 } : m);
+  renderMovies();
+  saveToCloud();
+}
+
+function toggleWatched(id) {
+  movies = movies.map(m => m.id === id ? { ...m, watched: !m.watched } : m);
+  renderMovies();
+  saveToCloud();
+}
+
+function addMovie() {
+  const emoji = document.getElementById('mf-emoji').value.trim();
+  const title = document.getElementById('mf-title').value.trim();
+  const type  = document.getElementById('mf-type').value;
+  const note  = document.getElementById('mf-note').value.trim();
+  if (!title) return;
+  movies.push({ id: Date.now(), emoji, title, type, note, votes: 0, watched: false });
+  renderMovies();
+  saveToCloud();
+  document.getElementById('mf-emoji').value = '';
+  document.getElementById('mf-title').value = '';
+  document.getElementById('mf-note').value = '';
+  toggleForm('movies-form');
+}
+
+const CAT_LABELS = { bar:'Bar', mat:'Yemek', sev:'Gezilecek Yer', akt:'Aktivite', kul:'Eğlenceli' };
+const CAT_CSS    = { bar:'cat-bar', mat:'cat-mat', sev:'cat-sev', akt:'cat-akt', kul:'cat-kul' };
+let _tipsFilter = 'alla';
+
+function renderTips() {
+  const el = document.getElementById('tips-list');
+  const filtered = _tipsFilter === 'alla' ? tips : tips.filter(t => t.cat === _tipsFilter);
+  if (!filtered.length) {
+    el.innerHTML = `<div style="padding:32px 0;text-align:center;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;color:#6B7C8C">Henüz öneri yok — bir tane ekle! 🚀</div>`;
+    return;
+  }
+  el.innerHTML = filtered.map(t => `
+    <div class="tip-card deletable">
+      <button class="edit-btn" onclick="openEdit('tips',${t.id})">✎</button>
+      <button class="del-btn" onclick="deleteItem('tips',${t.id})">×</button>
+      <div class="tip-icon">${t.emoji || '📍'}</div>
+      <div class="tip-body">
+        <div class="tip-name">${t.name}</div>
+        <div class="tip-meta">
+          <span class="cat-badge ${CAT_CSS[t.cat] || 'cat-kul'}">${CAT_LABELS[t.cat] || t.cat}</span>
+          ${t.area ? `<span>${t.area}</span>` : ''}
+        </div>
+        ${t.note ? `<div class="tip-note">${t.note}</div>` : ''}
+      </div>
+      <div class="tip-voted">
+        <button class="vote-btn${(t.votes||0) > 0 ? ' voted' : ''}" onclick="voteTip(${t.id})">👍</button>
+        <span class="vote-count">${t.votes || 0}</span>
+      </div>
+    </div>`).join('');
+}
+
+function filterTips(cat) {
+  _tipsFilter = cat;
+  document.querySelectorAll('#tab-tips .tips-cat-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim().includes(cat === 'alla' ? 'Hepsi' : CAT_LABELS[cat] || cat));
+  });
+  renderTips();
+}
+
+function voteTip(id) {
+  tips = tips.map(t => t.id === id ? { ...t, votes: (t.votes || 0) + 1 } : t);
+  renderTips();
+  saveToCloud();
+}
+
+
+/* ══════════════ PHOTOS ══════════════ */
+
+let _pendingUploads = 0;
+
+function renderPhotos() {
+  const grid = document.getElementById('photo-grid');
+  const countEl = document.getElementById('photo-count');
+  const sorted = [...photos].sort((a, b) => (b.uploaded || 0) - (a.uploaded || 0));
+  countEl.textContent = sorted.length + ' resim';
+
+  let html = '';
+  for (let i = 0; i < _pendingUploads; i++) {
+    html += `<div class="photo-pending">Yükleniyor…</div>`;
+  }
+  if (sorted.length === 0 && _pendingUploads === 0) {
+    html = `<div class="photo-empty">
+              <span class="ce">📷</span>
+              Henüz resim yok. Butona bas ve ilk anıları yükle!
+            </div>`;
+  } else {
+    html += sorted.map((p, idx) => `
+      <div class="photo-tile deletable" onclick="openSlideshow(${idx})">
+        <button class="del-btn" onclick="event.stopPropagation();deletePhoto('${p.id}')">×</button>
+        <img src="${p.data}" alt="" loading="lazy">
+      </div>
+    `).join('');
+  }
+  grid.innerHTML = html;
+}
+
+/* Compress an image file → JPEG dataURL. Keeps EXIF orientation
+   because modern browsers respect it when drawing to canvas. */
+function compressImage(file, maxDim = 1400, quality = 0.75) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('read failed'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('image load failed — try JPG/PNG'));
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > height && width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else if (height >= width && height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handlePhotoUpload(ev) {
+  const files = Array.from(ev.target.files || []);
+  ev.target.value = ''; // reset so same file can be picked again
+  if (!files.length) return;
+
+  switchTab('photos');
+
+  _pendingUploads = files.length;
+  renderPhotos();
+  showStatus(files.length + ' resim yükleniyor…');
+
+  let successCount = 0;
+  for (const file of files) {
+    try {
+      if (!file.type.startsWith('image/')) {
+        console.warn('Skipping non-image file:', file.name);
+        _pendingUploads--;
+        renderPhotos();
+        continue;
+      }
+      const dataUrl = await compressImage(file);
+      const payload = { data: dataUrl, uploaded: Date.now(), name: file.name };
+      const res = await fetch(PHOTOS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error();
+      const { name: firebaseId } = await res.json();
+      photos.push({ id: firebaseId, ...payload });
+      successCount++;
+      _pendingUploads--;
+      renderPhotos();
+    } catch(err) {
+      _pendingUploads--;
+      console.error('Upload failed for', file.name, err);
+      renderPhotos();
+    }
+  }
+
+  if (successCount === files.length) {
+    showStatus('Yüklendi ✓');
+  } else if (successCount > 0) {
+    showStatus(successCount + '/' + files.length + ' yüklendi', false);
+  } else {
+    showStatus('Yükleme başarısız ✗', false);
+  }
+}
+
+async function deletePhoto(id) {
+  const idx = photos.findIndex(p => p.id === id);
+  if (idx === -1) return;
+  const removed = photos.splice(idx, 1)[0];
+  renderPhotos();
+  try {
+    const res = await fetch(`${PHOTO_BASE}/${id}.json`, { method: 'DELETE' });
+    if (!res.ok) throw new Error();
+    showStatus('Silindi ✓');
+  } catch(e) {
+    photos.splice(idx, 0, removed);
+    renderPhotos();
+    showStatus('Silinemedi ✗', false);
+  }
+}
+
+/* ── Slideshow ── */
+let _slideIdx = 0;
+let _autoplayTimer = null;
+
+function getSlideshowList() {
+  return [...photos].sort((a, b) => (b.uploaded || 0) - (a.uploaded || 0));
+}
+
+function openSlideshow(idx) {
+  const list = getSlideshowList();
+  if (!list.length) return;
+  _slideIdx = idx;
+  document.getElementById('slideshow').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  showSlide();
+}
+
+function closeSlideshow() {
+  document.getElementById('slideshow').classList.remove('open');
+  document.body.style.overflow = '';
+  stopAutoplay();
+}
+
+function showSlide() {
+  const list = getSlideshowList();
+  if (!list.length) { closeSlideshow(); return; }
+  if (_slideIdx >= list.length) _slideIdx = 0;
+  if (_slideIdx < 0) _slideIdx = list.length - 1;
+  const img = document.getElementById('ss-img');
+  img.classList.add('fading');
+  setTimeout(() => {
+    img.src = list[_slideIdx].data;
+    img.classList.remove('fading');
+  }, 120);
+  document.getElementById('ss-counter').textContent = (_slideIdx + 1) + ' / ' + list.length;
+}
+
+function nextSlide() { _slideIdx++; showSlide(); }
+function prevSlide() { _slideIdx--; showSlide(); }
+
+function toggleAutoplay() {
+  const btn = document.getElementById('ss-play');
+  if (_autoplayTimer) {
+    stopAutoplay();
+  } else {
+    _autoplayTimer = setInterval(nextSlide, 3500);
+    btn.classList.add('playing');
+    btn.textContent = '❚❚';
+  }
+}
+function stopAutoplay() {
+  if (_autoplayTimer) clearInterval(_autoplayTimer);
+  _autoplayTimer = null;
+  const btn = document.getElementById('ss-play');
+  btn.classList.remove('playing');
+  btn.textContent = '▶';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (!document.getElementById('slideshow').classList.contains('open')) return;
+  if (e.key === 'ArrowRight') nextSlide();
+  else if (e.key === 'ArrowLeft') prevSlide();
+  else if (e.key === 'Escape') closeSlideshow();
+  else if (e.key === ' ') { e.preventDefault(); toggleAutoplay(); }
+});
+
+(function setupSwipe() {
+  const stage = document.querySelector('.slideshow-stage');
+  if (!stage) return;
+  let startX = 0, startY = 0, tracking = false;
+  stage.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    startX = t.clientX; startY = t.clientY; tracking = true;
+  }, { passive: true });
+  stage.addEventListener('touchend', (e) => {
+    if (!tracking) return;
+    tracking = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) nextSlide(); else prevSlide();
+    }
+  }, { passive: true });
+})();
+
+async function loadPhotos() {
+  try {
+    const res = await fetch(PHOTOS_URL);
+    const data = await res.json();
+    if (data && typeof data === 'object') {
+      photos = Object.entries(data).map(([id, p]) => ({ id, ...p }));
+    } else {
+      photos = [];
+    }
+    renderPhotos();
+  } catch(e) {
+    renderPhotos();
+  }
+}
+
+/* ── add/delete (existing) ── */
+
+function toggleForm(id) {
+  const f = document.getElementById(id);
+  f.classList.toggle('open');
+}
+
+function addTip() {
+  const emoji = document.getElementById('tf-emoji').value.trim();
+  const name  = document.getElementById('tf-name').value.trim();
+  const cat   = document.getElementById('tf-cat').value;
+  const area  = document.getElementById('tf-area').value.trim();
+  const note  = document.getElementById('tf-note').value.trim();
+  if (!name) return;
+  tips.push({ id: Date.now(), emoji: emoji || '📍', name, cat, area, note, votes: 0 });
+  renderTips();
+  saveToCloud();
+  document.getElementById('tf-emoji').value = '';
+  document.getElementById('tf-name').value = '';
+  document.getElementById('tf-area').value = '';
+  document.getElementById('tf-note').value = '';
+  toggleForm('tips-form');
+}
+
+function openEdit(list, id) {
+  _editCtx = { list, id };
+  const fields = document.getElementById('edit-modal-fields');
+  const titles = { movies: 'Film/diziyi düzenle', tips: 'Öneriyi düzenle' };
+  document.getElementById('edit-modal-title').textContent = titles[list] || 'Düzenle';
+
+  let item;
+  if (list === 'movies') item = movies.find(x => x.id === id);
+  else if (list === 'tips') item = tips.find(x => x.id === id);
+
+  if (list === 'movies') {
+    const types = ['film','dizi'];
+    fields.innerHTML = `
+      <div class="form-row">
+        <div class="form-field" style="max-width:70px"><label>Emoji</label><input id="ef-emoji" value="${item.emoji||''}"></div>
+        <div class="form-field"><label>İsim</label><input id="ef-title" value="${item.title}"></div>
+      </div>
+      <div class="form-field"><label>Tür</label>
+        <select id="ef-type">${types.map(t => `<option value="${t}"${item.type===t?' selected':''}>${MOVIE_TYPE_LABELS[t]}</option>`).join('')}</select>
+      </div>
+      <div class="form-field"><label>Not</label><textarea id="ef-desc" rows="2">${item.note||''}</textarea></div>`;
+  } else if (list === 'tips') {
+    const cats = ['bar','mat','sev','akt','kul'];
+    fields.innerHTML = `
+      <div class="form-row">
+        <div class="form-field" style="max-width:70px"><label>Emoji</label><input id="ef-emoji" value="${item.emoji||''}"></div>
+        <div class="form-field"><label>İsim</label><input id="ef-title" value="${item.name}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>Kategori</label>
+          <select id="ef-cat">${cats.map(c => `<option value="${c}"${item.cat===c?' selected':''}>${CAT_LABELS[c]}</option>`).join('')}</select>
+        </div>
+        <div class="form-field"><label>Bölge</label><input id="ef-area" value="${item.area||''}"></div>
+      </div>
+      <div class="form-field"><label>Not</label><textarea id="ef-desc" rows="2">${item.note||''}</textarea></div>`;
+  }
+
+  document.getElementById('edit-modal').classList.add('open');
+  fields.querySelector('input, textarea')?.focus();
+}
+
+function closeEdit() {
+  document.getElementById('edit-modal').classList.remove('open');
+  _editCtx = null;
+}
+
+function saveEdit() {
+  if (!_editCtx) return;
+  const { list, id } = _editCtx;
+  const get = i => document.getElementById(i)?.value.trim() ?? '';
+
+  function patch(arr) {
+    return arr.map(x => {
+      if (x.id !== id) return x;
+      if (list === 'movies') return { ...x, emoji: get('ef-emoji') || x.emoji, title: get('ef-title') || x.title, type: get('ef-type') || x.type, note: get('ef-desc') };
+      if (list === 'tips') return { ...x, emoji: get('ef-emoji') || x.emoji, name: get('ef-title') || x.name, cat: get('ef-cat') || x.cat, area: get('ef-area'), note: get('ef-desc') };
+      return x;
+    });
+  }
+
+  if (list === 'movies') { movies = patch(movies); renderMovies(); }
+  else if (list === 'tips') { tips = patch(tips); renderTips(); }
+
+  closeEdit();
+  saveToCloud();
+}
+
+function deleteItem(list, id) {
+  if (list === 'movies') { movies = movies.filter(x => x.id !== id); renderMovies(); }
+  else if (list === 'tips') { tips = tips.filter(x => x.id !== id); renderTips(); }
+  saveToCloud();
+}
+
+function switchTab(id) {
+  const tabIds = ['movies','tips','photos'];
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', tabIds[i] === id);
+  });
+  document.querySelectorAll('.panel').forEach(p => {
+    p.classList.toggle('active', p.id === 'tab-' + id);
+  });
+}
+
+const DEFAULT_DATA = {
+  movies: [],
+  tips: []
+};
+
+const CACHE_KEY = 'bktlist_cache_v2';
+
+function loadCache() {
+  try { const v = localStorage.getItem(CACHE_KEY); return v ? JSON.parse(v) : null; } catch(e) { return null; }
+}
+function writeCache(data) {
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+function applyData(d) {
+  movies = d.movies ? d.movies : DEFAULT_DATA.movies;
+  tips   = d.tips   ? d.tips   : DEFAULT_DATA.tips;
+  renderMovies();
+  renderTips();
+}
+
+const cached = loadCache();
+if (cached) {
+  applyData(cached);
+}
+
+fetch(DB_URL)
+  .then(r => r.json())
+  .then(d => {
+    const seeded = !d;
+    if (seeded) {
+      applyData(DEFAULT_DATA);
+      writeCache(DEFAULT_DATA);
+      saveToCloud();
+    } else {
+      applyData(d);
+      writeCache(d);
+    }
+  })
+  .catch(err => {
+    if (!cached) applyData(DEFAULT_DATA);
+    showStatus('Çevrimdışı — değişiklikler kaydedilmeyecek', false);
+  });
+
+renderPhotos();
+loadPhotos();
+
+wobblify('.wobble');
+</script>
+</body>
+</html>
