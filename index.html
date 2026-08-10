@@ -442,6 +442,81 @@
   .cat-film { background: var(--gold);  color: var(--bg-deep); }
   .cat-dizi { background: var(--rose);  color: var(--bg-deep); }
 
+  .imdb-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #F5C518;
+    color: #1A1A1A;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+  }
+  .tip-genre {
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-family: var(--font-body);
+    font-weight: 500;
+  }
+  .tip-poster {
+    width: 46px;
+    height: 66px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: var(--line-soft);
+    flex-shrink: 0;
+  }
+  .imdb-link {
+    color: var(--gold-light);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .omdb-status {
+    font-size: 12px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: var(--ink-soft);
+    min-height: 16px;
+  }
+  .omdb-status.err { color: var(--rose); }
+  .omdb-status.ok { color: var(--mint); }
+  .omdb-preview {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--bg-deep);
+    border: var(--line-soft);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+  }
+  .omdb-preview img {
+    width: 52px;
+    height: 76px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+  }
+  .omdb-preview-body { flex: 1; min-width: 0; }
+  .omdb-preview-title { font-family: var(--font-head); font-weight: 600; font-size: 13px; color: var(--ink); margin-bottom: 4px; }
+  .omdb-preview-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; }
+  .omdb-preview-clear {
+    background: none;
+    border: none;
+    color: var(--rose);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+  }
+
   /* ─── TIPS / ÖNERİLER ─── */
   .tips-cats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
   .tips-cat-btn {
@@ -876,16 +951,25 @@
     <button class="add-btn" onclick="toggleForm('movies-form')" style="margin-top:18px"><span class="add-btn-icon">+</span> Film/dizi ekle</button>
     <div class="add-form" id="movies-form">
       <div class="form-row">
-        <div class="form-field" style="max-width:70px">
-          <label>Emoji</label>
-          <input id="mf-emoji" type="text" placeholder="🎬">
-        </div>
         <div class="form-field">
           <label>İsim</label>
           <input id="mf-title" type="text" placeholder="Film/dizi adı">
         </div>
+        <div class="form-field" style="max-width:90px">
+          <label>Yıl (opsiyonel)</label>
+          <input id="mf-year" type="text" placeholder="2024">
+        </div>
       </div>
+      <button class="add-btn" type="button" onclick="fetchOmdbForForm()" id="mf-omdb-btn" style="margin-top:0">
+        <span class="add-btn-icon">🎞️</span> IMDb'den bilgi çek
+      </button>
+      <div id="mf-omdb-status" class="omdb-status"></div>
+      <div id="mf-omdb-preview" class="omdb-preview" style="display:none"></div>
       <div class="form-row">
+        <div class="form-field" style="max-width:70px">
+          <label>Emoji</label>
+          <input id="mf-emoji" type="text" placeholder="🎬">
+        </div>
         <div class="form-field">
           <label>Tür</label>
           <select id="mf-type">
@@ -1006,7 +1090,14 @@ const DB_URL = 'https://bktlist-97058-default-rtdb.europe-west1.firebasedatabase
 const PHOTOS_URL = 'https://bktlist-97058-default-rtdb.europe-west1.firebasedatabase.app/photos.json';
 const PHOTO_BASE = 'https://bktlist-97058-default-rtdb.europe-west1.firebasedatabase.app/photos';
 
+/* OMDb API — used to pull IMDb rating/genre/poster for the movie watchlist.
+   Get a free key at https://www.omdbapi.com/apikey.aspx (instant, 1,000 requests/day)
+   and paste it below. Without a real key the "IMDb'den bilgi çek" lookup will fail
+   but everything else on the site still works fine. */
+const OMDB_API_KEY = 'eb1d40f3';
+
 let _editCtx = null;
+let _mfOmdbData = null; // holds fetched IMDb info for the movie currently being added
 
 let movies = [], tips = [];
 let photos = []; // [{ id (firebase key), data (base64), uploaded (ts) }]
@@ -1054,13 +1145,18 @@ function renderMovies() {
     <div class="tip-card deletable${m.watched ? ' movie-watched' : ''}">
       <button class="edit-btn" onclick="openEdit('movies',${m.id})">✎</button>
       <button class="del-btn" onclick="deleteItem('movies',${m.id})">×</button>
-      <div class="tip-icon">${m.emoji || MOVIE_TYPE_ICON[m.type] || '🎬'}</div>
+      ${m.poster
+        ? `<img class="tip-poster" src="${m.poster}" alt="">`
+        : `<div class="tip-icon">${m.emoji || MOVIE_TYPE_ICON[m.type] || '🎬'}</div>`}
       <div class="tip-body">
-        <div class="tip-name">${m.title}</div>
+        <div class="tip-name">${m.title}${m.year ? ` <span style="color:var(--muted);font-weight:500;">(${m.year})</span>` : ''}</div>
         <div class="tip-meta">
           <span class="cat-badge ${MOVIE_TYPE_CSS[m.type] || 'cat-film'}">${MOVIE_TYPE_LABELS[m.type] || m.type}</span>
+          ${m.imdbRating ? `<span class="imdb-badge">★ ${m.imdbRating}</span>` : ''}
+          ${m.genre ? `<span class="tip-genre">${m.genre}</span>` : ''}
         </div>
         ${m.note ? `<div class="tip-note">${m.note}</div>` : ''}
+        ${m.imdbID ? `<a class="imdb-link" href="https://www.imdb.com/title/${m.imdbID}/" target="_blank" rel="noopener">IMDb'de gör →</a>` : ''}
       </div>
       <div class="tip-voted">
         <button class="watched-btn${m.watched ? ' watched' : ''}" onclick="toggleWatched(${m.id})">${m.watched ? '✓ İzlendi' : 'İzlenecek'}</button>
@@ -1090,18 +1186,99 @@ function toggleWatched(id) {
   saveToCloud();
 }
 
+async function fetchOmdbInfo(title, year) {
+  let url = `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&t=${encodeURIComponent(title)}`;
+  if (year) url += `&y=${encodeURIComponent(year)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('OMDb servisine ulaşılamadı');
+  const data = await res.json();
+  if (data.Response === 'False') throw new Error(data.Error || 'Bulunamadı');
+  return data;
+}
+
+async function fetchOmdbForForm() {
+  const title = document.getElementById('mf-title').value.trim();
+  const year = document.getElementById('mf-year').value.trim();
+  const statusEl = document.getElementById('mf-omdb-status');
+  const previewEl = document.getElementById('mf-omdb-preview');
+  const btn = document.getElementById('mf-omdb-btn');
+
+  if (!title) {
+    statusEl.textContent = '⚠️ Önce bir isim yaz.';
+    statusEl.className = 'omdb-status err';
+    return;
+  }
+  if (!OMDB_API_KEY || OMDB_API_KEY === 'YOUR_OMDB_KEY_HERE') {
+    statusEl.textContent = '⚠️ IMDb bağlantısı henüz kurulmadı — elle ekleyebilirsin.';
+    statusEl.className = 'omdb-status err';
+    return;
+  }
+
+  btn.disabled = true;
+  statusEl.textContent = '🔎 Aranıyor…';
+  statusEl.className = 'omdb-status';
+  previewEl.style.display = 'none';
+
+  try {
+    const data = await fetchOmdbInfo(title, year);
+    _mfOmdbData = {
+      poster: (data.Poster && data.Poster !== 'N/A') ? data.Poster : '',
+      genre: (data.Genre && data.Genre !== 'N/A') ? data.Genre : '',
+      imdbRating: (data.imdbRating && data.imdbRating !== 'N/A') ? data.imdbRating : '',
+      year: (data.Year && data.Year !== 'N/A') ? data.Year : '',
+      imdbID: data.imdbID || ''
+    };
+    document.getElementById('mf-title').value = data.Title || title;
+    document.getElementById('mf-type').value = data.Type === 'series' ? 'dizi' : 'film';
+
+    previewEl.style.display = 'flex';
+    previewEl.innerHTML = `
+      ${_mfOmdbData.poster ? `<img src="${_mfOmdbData.poster}" alt="">` : ''}
+      <div class="omdb-preview-body">
+        <div class="omdb-preview-title">${data.Title}${_mfOmdbData.year ? ` (${_mfOmdbData.year})` : ''}</div>
+        <div class="omdb-preview-meta">
+          ${_mfOmdbData.imdbRating ? `<span class="imdb-badge">★ ${_mfOmdbData.imdbRating}</span>` : ''}
+          ${_mfOmdbData.genre ? `<span class="tip-genre">${_mfOmdbData.genre}</span>` : ''}
+        </div>
+        <button type="button" class="omdb-preview-clear" onclick="clearOmdbPreview()">Bilgiyi kaldır, elle gir</button>
+      </div>`;
+    statusEl.textContent = '✓ IMDb bilgisi eklendi';
+    statusEl.className = 'omdb-status ok';
+  } catch (e) {
+    _mfOmdbData = null;
+    statusEl.textContent = '✗ Bulunamadı — ismi kontrol et ya da elle ekle. (' + e.message + ')';
+    statusEl.className = 'omdb-status err';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function clearOmdbPreview() {
+  _mfOmdbData = null;
+  document.getElementById('mf-omdb-preview').style.display = 'none';
+  document.getElementById('mf-omdb-preview').innerHTML = '';
+  document.getElementById('mf-omdb-status').textContent = '';
+}
+
 function addMovie() {
   const emoji = document.getElementById('mf-emoji').value.trim();
   const title = document.getElementById('mf-title').value.trim();
   const type  = document.getElementById('mf-type').value;
   const note  = document.getElementById('mf-note').value.trim();
   if (!title) return;
-  movies.push({ id: Date.now(), emoji, title, type, note, votes: 0, watched: false });
+  const omdb = _mfOmdbData || {};
+  movies.push({
+    id: Date.now(), emoji, title, type, note, votes: 0, watched: false,
+    poster: omdb.poster || '', genre: omdb.genre || '', imdbRating: omdb.imdbRating || '',
+    year: omdb.year || '', imdbID: omdb.imdbID || ''
+  });
   renderMovies();
   saveToCloud();
   document.getElementById('mf-emoji').value = '';
   document.getElementById('mf-title').value = '';
+  document.getElementById('mf-year').value = '';
   document.getElementById('mf-note').value = '';
+  clearOmdbPreview();
   toggleForm('movies-form');
 }
 
