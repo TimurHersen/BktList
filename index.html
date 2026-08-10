@@ -104,7 +104,7 @@
 
   /* One restrained paper-cut composition: broad shapes, lots of negative space. */
   .paper-sun {
-    right: -14vw;
+    right: -20vw;
     top: -15vw;
     width: min(470px, 72vw);
     height: min(470px, 72vw);
@@ -149,7 +149,7 @@
   }
 
   @media (max-width: 480px) {
-    .paper-sun { right: -25vw; top: -13vw; width: 330px; height: 330px; }
+    .paper-sun { right: -30vw; top: -13vw; width: 330px; height: 330px; }
     .paper-arch { top: 19%; width: 360px; height: 500px; }
     .paper-city { height: 190px; }
     .paper-corner { left: -55px; top: 5%; width: 190px; height: 190px; }
@@ -227,6 +227,11 @@
   }
   .tab-bar::-webkit-scrollbar { display: none; }
   .tab-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    line-height: 1;
     background: none;
     border: none;
     color: var(--ink);
@@ -243,6 +248,17 @@
     text-underline-offset: 6px;
     text-decoration-thickness: 1.5px;
     transition: transform 0.12s, text-decoration-color 0.15s, color 0.15s;
+  }
+  .tab-icon {
+    display: inline-flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 1em;
+    height: 0.92em;
+    line-height: 1;
+    font-family: system-ui, sans-serif;
+    align-self: flex-end;
+    transform: translateY(-7px);
   }
   .tab-btn:hover { transform: translateY(-1px); text-decoration-color: var(--gold-light); }
   .tab-btn.active {
@@ -968,8 +984,6 @@
       <path d="M350 165 L500 108 L500 143 Z" fill="#C92B17"/>
       <path d="M350 165 L500 172 L500 208 Z" fill="#F04A20"/>
       <path d="M350 165 L492 250 L472 278 Z" fill="#C92B17"/>
-      <path d="M350 165 L447 320 L415 331 Z" fill="#F04A20"/>
-      <path d="M350 165 L382 326 L348 329 Z" fill="#C92B17"/>
       <!-- layered paper circles, deliberately flat rather than glossy -->
       <circle cx="350" cy="165" r="128" fill="#8E160F"/>
       <circle cx="350" cy="165" r="101" fill="#E52B18"/>
@@ -1052,7 +1066,7 @@
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('movies')">Filmler &amp; Diziler</button>
     <button class="tab-btn" onclick="switchTab('tips')">Öneriler</button>
-    <button class="tab-btn" onclick="switchTab('photos')">Resimler 📸</button>
+    <button class="tab-btn" onclick="switchTab('photos')">Resimler <span class="tab-icon" aria-hidden="true">📸</span></button>
   </div>
 </div>
 
