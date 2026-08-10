@@ -439,6 +439,38 @@
   .watched-btn:hover { transform: translateY(-1px); }
   .watched-btn.watched { background: var(--jade); color: var(--bg-deep); border-color: var(--jade); }
 
+  .filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: var(--line-soft);
+    border-radius: var(--radius-pill);
+    color: var(--ink);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 9px 16px;
+    cursor: pointer;
+    margin-bottom: 18px;
+    transition: transform 0.1s, border-color 0.15s;
+  }
+  .filter-btn:hover { transform: translateY(-1px); border-color: var(--gold); }
+  .filter-badge {
+    background: var(--gold);
+    color: var(--bg-deep);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2px;
+  }
+
   .cat-film { background: var(--gold);  color: var(--bg-deep); }
   .cat-dizi { background: var(--rose);  color: var(--bg-deep); }
 
@@ -461,8 +493,8 @@
     font-weight: 500;
   }
   .tip-poster {
-    width: 46px;
-    height: 66px;
+    width: 74px;
+    height: 106px;
     object-fit: cover;
     border-radius: var(--radius-sm);
     border: var(--line-soft);
@@ -833,6 +865,7 @@
     .tips-cat-btn { font-size: 10px; padding: 4px 10px; }
     .tip-card { padding: 12px; gap: 10px; }
     .tip-icon { font-size: 19px; width: 36px; height: 36px; }
+    .tip-poster { width: 58px; height: 83px; }
     .form-row { gap: 8px; }
     .add-form { padding: 12px; }
     .modal { padding: 16px; }
@@ -942,12 +975,10 @@
   <!-- MOVIES / FİLMLER & DİZİLER -->
   <div class="panel active" id="tab-movies">
     <p class="sec-label">Ne izlesek?</p>
-    <div class="tips-cats" id="movies-type-filters">
-      <button class="tips-cat-btn active" onclick="filterMovies('hepsi')">Hepsi</button>
-      <button class="tips-cat-btn" onclick="filterMovies('film')">🎬 Film</button>
-      <button class="tips-cat-btn" onclick="filterMovies('dizi')">📺 Dizi</button>
-    </div>
-    <div class="tips-cats" id="movies-genre-filters" style="display:none"></div>
+    <button class="filter-btn" onclick="openMoviesFilter()">
+      <span>🔎 Filtrele</span>
+      <span id="movies-filter-badge" class="filter-badge" style="display:none">0</span>
+    </button>
     <div class="tips-list" id="movies-list"></div>
     <button class="add-btn" onclick="toggleForm('movies-form')" style="margin-top:18px"><span class="add-btn-icon">+</span> Film/dizi ekle</button>
     <div class="add-form" id="movies-form">
@@ -1056,6 +1087,31 @@
   </div>
 </div>
 
+<!-- ═══════════ MOVIES FILTER MODAL ═══════════ -->
+<div class="modal-overlay" id="movies-filter-modal" onclick="if(event.target===this)closeMoviesFilter()">
+  <div class="modal">
+    <div class="modal-title">Filtrele</div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div>
+        <p class="sec-label" style="margin-bottom:8px;">Tür</p>
+        <div class="tips-cats" id="filter-type-options"></div>
+      </div>
+      <div>
+        <p class="sec-label" style="margin-bottom:8px;">Durum</p>
+        <div class="tips-cats" id="filter-status-options"></div>
+      </div>
+      <div id="filter-genre-block">
+        <p class="sec-label" style="margin-bottom:8px;">Kategori <span style="text-transform:none;letter-spacing:0;">(birden fazla seçilebilir)</span></p>
+        <div class="tips-cats" id="filter-genre-options"></div>
+      </div>
+    </div>
+    <div class="form-actions" style="margin-top:8px;">
+      <button class="btn-cancel" onclick="clearMoviesFilter()">Temizle</button>
+      <button class="btn-save" onclick="closeMoviesFilter()">Uygula</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════ EDIT MODAL ═══════════ -->
 <div class="modal-overlay" id="edit-modal" onclick="if(event.target===this)closeEdit()">
   <div class="modal">
@@ -1103,7 +1159,8 @@ let _mfOmdbData = null; // holds fetched IMDb info for the movie currently being
 let movies = [], tips = [];
 let photos = []; // [{ id (firebase key), data (base64), uploaded (ts) }]
 let _moviesFilter = 'hepsi';
-let _moviesGenreFilter = 'hepsi';
+let _moviesStatusFilter = 'hepsi'; // 'hepsi' | 'izlenecek' | 'izlendi'
+let _moviesGenreFilters = new Set(); // empty set = all genres
 
 const GENRE_TR = {
   'Action': 'Aksiyon', 'Adventure': 'Macera', 'Animation': 'Animasyon',
@@ -1156,10 +1213,11 @@ function renderMovies() {
   const el = document.getElementById('movies-list');
   const filtered = movies.filter(m => {
     const typeOk = _moviesFilter === 'hepsi' || m.type === _moviesFilter;
-    const genreOk = _moviesGenreFilter === 'hepsi' || splitGenres(m.genre).includes(_moviesGenreFilter);
-    return typeOk && genreOk;
+    const statusOk = _moviesStatusFilter === 'hepsi' || (_moviesStatusFilter === 'izlendi' ? !!m.watched : !m.watched);
+    const genreOk = _moviesGenreFilters.size === 0 || splitGenres(m.genre).some(g => _moviesGenreFilters.has(g));
+    return typeOk && statusOk && genreOk;
   });
-  renderMovieGenreFilters();
+  updateMoviesFilterBadge();
   if (!filtered.length) {
     const msg = movies.length
       ? 'Bu filtreye uyan film/dizi yok.'
@@ -1186,44 +1244,83 @@ function renderMovies() {
       </div>
       <div class="tip-voted">
         <button class="watched-btn${m.watched ? ' watched' : ''}" onclick="toggleWatched(${m.id})">${m.watched ? '✓ İzlendi' : 'İzlenecek'}</button>
-        <button class="vote-btn${(m.votes||0) > 0 ? ' voted' : ''}" onclick="voteMovie(${m.id})">👍</button>
-        <span class="vote-count">${m.votes || 0}</span>
       </div>
     </div>`).join('');
 }
 
-function renderMovieGenreFilters() {
-  const wrap = document.getElementById('movies-genre-filters');
+/* ── movies filter modal ── */
+
+function updateMoviesFilterBadge() {
+  const count = (_moviesFilter !== 'hepsi' ? 1 : 0) + (_moviesStatusFilter !== 'hepsi' ? 1 : 0) + _moviesGenreFilters.size;
+  const badge = document.getElementById('movies-filter-badge');
+  if (count > 0) {
+    badge.style.display = 'inline-flex';
+    badge.textContent = String(count);
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderMoviesFilterOptions() {
+  const typeWrap = document.getElementById('filter-type-options');
+  const typeOpts = [['hepsi', 'Hepsi'], ['film', '🎬 Film'], ['dizi', '📺 Dizi']];
+  typeWrap.innerHTML = typeOpts.map(([val, label]) =>
+    `<button class="tips-cat-btn${_moviesFilter === val ? ' active' : ''}" onclick="selectMoviesTypeFilter('${val}')">${label}</button>`
+  ).join('');
+
+  const statusWrap = document.getElementById('filter-status-options');
+  const statusOpts = [['hepsi', 'Hepsi'], ['izlenecek', 'İzlenecek'], ['izlendi', 'İzlendi']];
+  statusWrap.innerHTML = statusOpts.map(([val, label]) =>
+    `<button class="tips-cat-btn${_moviesStatusFilter === val ? ' active' : ''}" onclick="selectMoviesStatusFilter('${val}')">${label}</button>`
+  ).join('');
+
+  const genreWrap = document.getElementById('filter-genre-options');
+  const genreBlock = document.getElementById('filter-genre-block');
   const genres = Array.from(new Set(movies.flatMap(m => splitGenres(m.genre)))).sort((a, b) => genreLabel(a).localeCompare(genreLabel(b), 'tr'));
   if (!genres.length) {
-    wrap.style.display = 'none';
-    wrap.innerHTML = '';
-    if (_moviesGenreFilter !== 'hepsi') _moviesGenreFilter = 'hepsi';
+    genreBlock.style.display = 'none';
     return;
   }
-  if (!genres.includes(_moviesGenreFilter)) _moviesGenreFilter = 'hepsi';
-  wrap.style.display = 'flex';
-  wrap.innerHTML = `<button class="tips-cat-btn${_moviesGenreFilter === 'hepsi' ? ' active' : ''}" onclick="filterMoviesGenre('hepsi')">Tüm türler</button>` +
-    genres.map(g => `<button class="tips-cat-btn${_moviesGenreFilter === g ? ' active' : ''}" onclick="filterMoviesGenre('${g.replace(/'/g, "\\'")}')">${genreLabel(g)}</button>`).join('');
+  genreBlock.style.display = 'block';
+  genreWrap.innerHTML = genres.map(g =>
+    `<button class="tips-cat-btn${_moviesGenreFilters.has(g) ? ' active' : ''}" onclick="toggleMoviesGenreFilter('${g.replace(/'/g, "\\'")}')">${genreLabel(g)}</button>`
+  ).join('');
 }
 
-function filterMoviesGenre(g) {
-  _moviesGenreFilter = g;
-  renderMovies();
-}
-
-function filterMovies(type) {
+function selectMoviesTypeFilter(type) {
   _moviesFilter = type;
-  document.querySelectorAll('#movies-type-filters .tips-cat-btn').forEach(b => {
-    b.classList.toggle('active', b.textContent.trim().includes(type === 'hepsi' ? 'Hepsi' : MOVIE_TYPE_LABELS[type] || type));
-  });
+  renderMoviesFilterOptions();
   renderMovies();
 }
 
-function voteMovie(id) {
-  movies = movies.map(m => m.id === id ? { ...m, votes: (m.votes || 0) + 1 } : m);
+function selectMoviesStatusFilter(status) {
+  _moviesStatusFilter = status;
+  renderMoviesFilterOptions();
   renderMovies();
-  saveToCloud();
+}
+
+function toggleMoviesGenreFilter(g) {
+  if (_moviesGenreFilters.has(g)) _moviesGenreFilters.delete(g);
+  else _moviesGenreFilters.add(g);
+  renderMoviesFilterOptions();
+  renderMovies();
+}
+
+function clearMoviesFilter() {
+  _moviesFilter = 'hepsi';
+  _moviesStatusFilter = 'hepsi';
+  _moviesGenreFilters.clear();
+  renderMoviesFilterOptions();
+  renderMovies();
+}
+
+function openMoviesFilter() {
+  renderMoviesFilterOptions();
+  document.getElementById('movies-filter-modal').classList.add('open');
+}
+
+function closeMoviesFilter() {
+  document.getElementById('movies-filter-modal').classList.remove('open');
 }
 
 function toggleWatched(id) {
@@ -1328,7 +1425,7 @@ function addMovie() {
   if (!title) return;
   const omdb = _mfOmdbData || {};
   movies.push({
-    id: Date.now(), emoji, title, type, note, votes: 0, watched: false,
+    id: Date.now(), emoji, title, type, note, watched: false,
     poster: omdb.poster || '', genre: omdb.genre || '', imdbRating: omdb.imdbRating || '',
     year: omdb.year || '', imdbID: omdb.imdbID || ''
   });
