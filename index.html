@@ -279,9 +279,9 @@
     z-index: 1;
   }
   .panel { display: none; padding-top: 26px; }
-  .panel.active { display: block; animation: fadein 0.25s ease; }
+  .panel.active { display: block; animation: fadein 0.4s ease; }
   @keyframes fadein {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
@@ -687,7 +687,7 @@
     align-items: flex-start;
     box-shadow: var(--shadow-sm);
     transition: transform 0.1s, box-shadow 0.1s, border-color .15s;
-    animation: cardIn .5s cubic-bezier(.16,.84,.44,1) both;
+    animation: cardIn .75s cubic-bezier(.16,.84,.44,1) both;
     animation-delay: var(--stagger, 0ms);
   }
   .tip-card:hover {
@@ -790,7 +790,7 @@
     cursor: pointer;
     background: var(--card);
     transition: transform 0.1s, box-shadow 0.1s;
-    animation: cardIn .45s cubic-bezier(.16,.84,.44,1) both;
+    animation: cardIn .65s cubic-bezier(.16,.84,.44,1) both;
     animation-delay: var(--stagger, 0ms);
   }
   .photo-tile:hover {
@@ -1366,7 +1366,7 @@ function renderMovies() {
     return;
   }
   el.innerHTML = filtered.map((m, idx) => `
-    <div class="tip-card deletable${m.watched ? ' movie-watched' : ''}" style="--stagger:${Math.min(idx,10) * 55}ms">
+    <div class="tip-card deletable${m.watched ? ' movie-watched' : ''}" style="--stagger:${Math.min(idx,10) * 120}ms">
       <button class="edit-btn" onclick="openEdit('movies',${m.id})">✎</button>
       <button class="del-btn" onclick="deleteItem(event,'movies',${m.id})">×</button>
       ${m.poster
@@ -1591,7 +1591,7 @@ function renderTips() {
     return;
   }
   el.innerHTML = filtered.map((t, idx) => `
-    <div class="tip-card deletable" style="--stagger:${Math.min(idx,10) * 55}ms">
+    <div class="tip-card deletable" style="--stagger:${Math.min(idx,10) * 120}ms">
       <button class="edit-btn" onclick="openEdit('tips',${t.id})">✎</button>
       <button class="del-btn" onclick="deleteItem(event,'tips',${t.id})">×</button>
       <div class="tip-icon">${t.emoji || '📍'}</div>
@@ -1646,7 +1646,7 @@ function renderPhotos() {
             </div>`;
   } else {
     html += sorted.map((p, idx) => `
-      <div class="photo-tile deletable" style="--stagger:${Math.min(idx,12) * 40}ms" onclick="openSlideshow(${idx})">
+      <div class="photo-tile deletable" style="--stagger:${Math.min(idx,12) * 90}ms" onclick="openSlideshow(${idx})">
         <button class="del-btn" onclick="event.stopPropagation();deletePhoto(event,'${p.id}')">×</button>
         <img src="${p.data}" alt="" loading="lazy">
       </div>
