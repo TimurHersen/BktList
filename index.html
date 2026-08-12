@@ -736,6 +736,193 @@
   .cat-akt { background: var(--gold-deep);  color: var(--ink); }
   .cat-kul { background: var(--rose-deep);  color: var(--ink); }
 
+  .cat-pri-yuksek { background: var(--rose);      color: var(--bg-deep); }
+  .cat-pri-orta   { background: var(--gold-light); color: var(--bg-deep); }
+  .cat-pri-dusuk  { background: var(--card-soft); color: var(--ink-soft); border: var(--line-soft); }
+  .price-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: var(--gold);
+    color: var(--bg-deep);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+  }
+  .wf-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 2px 0;
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .wf-divider::before, .wf-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(201,162,77,0.3);
+  }
+
+  .wf-search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .wf-search-results:empty { display: none; }
+  .wf-result-card {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: var(--bg-deep);
+    border: var(--line-soft);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+  }
+  .wf-result-card img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+  }
+  .wf-result-body { flex: 1; min-width: 0; }
+  .wf-result-title {
+    font-size: 12px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 3px;
+  }
+  .wf-result-pick {
+    background: var(--gold);
+    color: var(--bg-deep);
+    border: none;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* ─── WISHLIST PRODUCT GRID ─── */
+  .wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+  }
+  .wishlist-card {
+    position: relative;
+    background: rgba(34, 30, 23, 0.86);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: var(--line-soft);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.1s, box-shadow 0.1s, border-color .15s;
+    animation: cardIn .75s cubic-bezier(.16,.84,.44,1) both;
+    animation-delay: var(--stagger, 0ms);
+  }
+  .wishlist-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    border-color: rgba(201,162,77,0.5);
+  }
+  .wishlist-card.removing {
+    animation: none;
+    transition: opacity .2s ease, transform .2s ease;
+    opacity: 0;
+    transform: scale(.9);
+    pointer-events: none;
+  }
+  .wishlist-card-media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: var(--bg-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .wishlist-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #fff;
+    display: block;
+  }
+  .wishlist-card-media .wl-emoji { font-size: 40px; }
+  .wishlist-card-priority {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+  }
+  .wishlist-card-body {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+  .wishlist-card-title {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--ink);
+    line-height: 1.32;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .wishlist-card-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .wishlist-card-note {
+    font-size: 11.5px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    color: var(--ink-soft);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .wishlist-card-footer {
+    margin-top: auto;
+    padding-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .wishlist-card.bought { opacity: 0.5; }
+  .wishlist-card.bought .wishlist-card-title { text-decoration: line-through; }
+
+  @media (max-width: 480px) {
+    .wishlist-grid { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 10px; }
+    .wishlist-card-body { padding: 10px; gap: 4px; }
+    .wishlist-card-title { font-size: 12.5px; }
+  }
+
   .tip-voted { display: flex; align-items: center; gap: 6px; margin-left: auto; flex-shrink: 0; }
   .vote-btn {
     background: var(--card-soft);
@@ -1101,6 +1288,7 @@
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('movies')">Filmler &amp; Diziler</button>
     <button class="tab-btn" onclick="switchTab('tips')">Öneriler</button>
+    <button class="tab-btn" onclick="switchTab('wishlist')">İstek Listesi <span class="tab-icon" aria-hidden="true">🎁</span></button>
     <button class="tab-btn" onclick="switchTab('photos')">Resimler <span class="tab-icon" aria-hidden="true">📸</span></button>
   </div>
 </div>
@@ -1213,6 +1401,75 @@
     </div>
   </div>
 
+  <!-- İSTEK LİSTESİ -->
+  <div class="panel" id="tab-wishlist">
+    <p class="sec-label">Almak istediklerimiz</p>
+    <div class="tips-cats">
+      <button class="tips-cat-btn active" onclick="filterWishlist('hepsi')">Hepsi</button>
+      <button class="tips-cat-btn" onclick="filterWishlist('alinacak')">Alınacak</button>
+      <button class="tips-cat-btn" onclick="filterWishlist('alindi')">🎁 Alındı</button>
+    </div>
+    <div class="wishlist-grid" id="wishlist-list"></div>
+    <button class="add-btn" onclick="toggleForm('wishlist-form')" style="margin-top:18px"><span class="add-btn-icon">+</span> İstek ekle</button>
+    <div class="add-form" id="wishlist-form">
+     <div class="add-form-inner">
+      <div class="form-field">
+        <label>Amazon'da ara</label>
+        <div class="form-row" style="gap:8px">
+          <input id="wf-search" type="text" placeholder="örn. kablosuz kulaklık" style="flex:1">
+          <button class="btn-save" type="button" onclick="searchAmazonForForm()" style="white-space:nowrap">Ara</button>
+        </div>
+      </div>
+      <div id="wf-search-status" class="omdb-status"></div>
+      <div id="wf-search-results" class="wf-search-results"></div>
+
+      <div class="wf-divider"><span>veya link yapıştır</span></div>
+
+      <div class="form-field">
+        <label>Ürün linki (Amazon vb.)</label>
+        <input id="wf-url" type="text" placeholder="https://www.amazon.de/...">
+      </div>
+      <button class="add-btn" type="button" onclick="fetchWishlistForForm()" id="wf-fetch-btn" style="margin-top:0">
+        <span class="add-btn-icon">🔗</span> Linkten bilgi çek
+      </button>
+      <div id="wf-fetch-status" class="omdb-status"></div>
+      <div id="wf-fetch-preview" class="omdb-preview" style="display:none"></div>
+      <div class="form-row">
+        <div class="form-field" style="max-width:70px">
+          <label>Emoji</label>
+          <input id="wf-emoji" type="text" placeholder="🎁">
+        </div>
+        <div class="form-field">
+          <label>Ürün adı</label>
+          <input id="wf-title" type="text" placeholder="Ürün adı">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field" style="max-width:110px">
+          <label>Fiyat</label>
+          <input id="wf-price" type="text" placeholder="örn. 49,99 €">
+        </div>
+        <div class="form-field">
+          <label>Öncelik</label>
+          <select id="wf-priority">
+            <option value="dusuk">Düşük</option>
+            <option value="orta" selected>Orta</option>
+            <option value="yuksek">Yüksek</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Not</label>
+        <textarea id="wf-note" rows="2" placeholder="Neden istiyoruz?"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="toggleForm('wishlist-form')">İptal</button>
+        <button class="btn-save" onclick="addWishlistItem()">Kaydet</button>
+      </div>
+     </div>
+    </div>
+  </div>
+
   <!-- PHOTOS / RESİMLER -->
   <div class="panel" id="tab-photos">
     <p class="sec-label">Geziden anılar</p>
@@ -1293,10 +1550,20 @@ const PHOTO_BASE = 'https://bktlist-97058-default-rtdb.europe-west1.firebasedata
    but everything else on the site still works fine. */
 const OMDB_API_KEY = 'eb1d40f3';
 
+/* RapidAPI "Real-Time Amazon Data" — used for the wishlist search box.
+   There's no free official Amazon search API, so this uses a third-party
+   one. Get a free-tier key at https://rapidapi.com/letscrape-6bRBa3QguO5/api/real-time-amazon-data
+   (sign up, subscribe to the free plan, copy the key from the code snippet)
+   and paste it below. Without a key the search box will tell you to use
+   the link-paste fallback instead — everything else still works. */
+const AMAZON_RAPIDAPI_KEY = '70bf71b7d9mshfbce03e9c630e33p10980cjsn57fc895d631d';
+const AMAZON_RAPIDAPI_HOST = 'real-time-amazon-data.p.rapidapi.com';
+const AMAZON_SEARCH_COUNTRY = 'TR';
+
 let _editCtx = null;
 let _mfOmdbData = null; // holds fetched IMDb info for the movie currently being added
 
-let movies = [], tips = [];
+let movies = [], tips = [], wishlist = [];
 let photos = []; // [{ id (firebase key), data (base64), uploaded (ts) }]
 let _moviesFilter = 'hepsi';
 let _moviesStatusFilter = 'hepsi'; // 'hepsi' | 'izlenecek' | 'izlendi'
@@ -1332,7 +1599,7 @@ async function saveToCloud() {
     const res = await fetch(DB_URL, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ movies, tips })
+      body: JSON.stringify({ movies, tips, wishlist })
     });
     if (!res.ok) throw new Error();
     await res.json();
@@ -1625,6 +1892,260 @@ function voteTip(id) {
 }
 
 
+/* ══════════════ WISHLIST / İSTEK LİSTESİ ══════════════ */
+
+const PRIORITY_LABELS = { yuksek: 'Yüksek', orta: 'Orta', dusuk: 'Düşük' };
+const PRIORITY_CSS     = { yuksek: 'cat-pri-yuksek', orta: 'cat-pri-orta', dusuk: 'cat-pri-dusuk' };
+let _wishlistFilter = 'hepsi'; // 'hepsi' | 'alinacak' | 'alindi'
+let _wfPreviewData = null; // holds fetched link-preview info for the item currently being added
+let _wfSearchResults = []; // last Amazon search results, referenced by index when picking one
+
+async function searchAmazon(query) {
+  if (!AMAZON_RAPIDAPI_KEY || AMAZON_RAPIDAPI_KEY === 'YOUR_RAPIDAPI_KEY_HERE') {
+    throw new Error('Amazon araması için henüz bir RapidAPI anahtarı eklenmedi — linkten bilgi çek veya elle ekle.');
+  }
+  const url = `https://${AMAZON_RAPIDAPI_HOST}/search?query=${encodeURIComponent(query)}&country=${AMAZON_SEARCH_COUNTRY}&page=1`;
+  let res;
+  try {
+    res = await fetch(url, {
+      headers: {
+        'X-RapidAPI-Key': AMAZON_RAPIDAPI_KEY,
+        'X-RapidAPI-Host': AMAZON_RAPIDAPI_HOST
+      }
+    });
+  } catch (e) {
+    throw new Error('Ağa ulaşılamadı: ' + e.message);
+  }
+  let json;
+  try {
+    json = await res.json();
+  } catch (e) {
+    throw new Error('Sunucu geçersiz yanıt verdi (HTTP ' + res.status + ')');
+  }
+  if (!res.ok) throw new Error(json.message || ('HTTP ' + res.status));
+  const products = json?.data?.products || [];
+  if (!products.length) throw new Error('Sonuç bulunamadı');
+  return products;
+}
+
+async function searchAmazonForForm() {
+  const query = document.getElementById('wf-search').value.trim();
+  const statusEl = document.getElementById('wf-search-status');
+  const resultsEl = document.getElementById('wf-search-results');
+
+  if (!query) {
+    statusEl.textContent = '⚠️ Önce ne aradığını yaz.';
+    statusEl.className = 'omdb-status err';
+    return;
+  }
+
+  statusEl.textContent = '🔎 Aranıyor…';
+  statusEl.className = 'omdb-status';
+  resultsEl.innerHTML = '';
+
+  try {
+    const products = await searchAmazon(query);
+    _wfSearchResults = products.slice(0, 6);
+    resultsEl.innerHTML = _wfSearchResults.map((p, idx) => `
+      <div class="wf-result-card">
+        ${p.product_photo ? `<img src="${p.product_photo}" alt="">` : ''}
+        <div class="wf-result-body">
+          <div class="wf-result-title">${p.product_title || 'İsimsiz ürün'}</div>
+          ${p.product_price ? `<span class="price-badge">${p.product_price}</span>` : ''}
+        </div>
+        <button type="button" class="wf-result-pick" onclick="selectAmazonResult(${idx})">Seç</button>
+      </div>`).join('');
+    statusEl.textContent = `✓ ${_wfSearchResults.length} sonuç bulundu`;
+    statusEl.className = 'omdb-status ok';
+  } catch (e) {
+    _wfSearchResults = [];
+    statusEl.textContent = '✗ ' + e.message;
+    statusEl.className = 'omdb-status err';
+  }
+}
+
+function selectAmazonResult(idx) {
+  const p = _wfSearchResults[idx];
+  if (!p) return;
+  _wfPreviewData = { image: p.product_photo || '' };
+  document.getElementById('wf-title').value = p.product_title || '';
+  document.getElementById('wf-price').value = p.product_price || '';
+  document.getElementById('wf-url').value = p.product_url || '';
+
+  const previewEl = document.getElementById('wf-fetch-preview');
+  previewEl.style.display = 'flex';
+  previewEl.innerHTML = `
+    ${p.product_photo ? `<img src="${p.product_photo}" alt="">` : ''}
+    <div class="omdb-preview-body">
+      <div class="omdb-preview-title">${p.product_title || ''}</div>
+      <div class="omdb-preview-meta">
+        ${p.product_price ? `<span class="price-badge">${p.product_price}</span>` : ''}
+      </div>
+      <button type="button" class="omdb-preview-clear" onclick="clearWishlistPreview()">Bilgiyi kaldır, elle gir</button>
+    </div>`;
+  document.getElementById('wf-search-results').innerHTML = '';
+  document.getElementById('wf-search-status').textContent = '';
+}
+
+/* Uses microlink.io (free, no API key) to read a product page's title/image/
+   description. There's no free official Amazon product API, so this is a
+   generic link-preview fetch — it works well for title/image, but price is
+   often hidden from scrapers, so that field usually needs a manual check. */
+async function fetchLinkPreview(url) {
+  const endpoint = 'https://api.microlink.io/?url=' + encodeURIComponent(url) + '&palette=false';
+  let res;
+  try {
+    res = await fetch(endpoint);
+  } catch (e) {
+    throw new Error('Ağa ulaşılamadı: ' + e.message);
+  }
+  let json;
+  try {
+    json = await res.json();
+  } catch (e) {
+    throw new Error('Sunucu geçersiz yanıt verdi (HTTP ' + res.status + ')');
+  }
+  if (json.status !== 'success') {
+    throw new Error(json.message || 'Link okunamadı');
+  }
+  return json.data;
+}
+
+async function fetchWishlistForForm() {
+  const url = document.getElementById('wf-url').value.trim();
+  const statusEl = document.getElementById('wf-fetch-status');
+  const previewEl = document.getElementById('wf-fetch-preview');
+  const btn = document.getElementById('wf-fetch-btn');
+
+  if (!url) {
+    statusEl.textContent = '⚠️ Önce bir link yapıştır.';
+    statusEl.className = 'omdb-status err';
+    return;
+  }
+
+  btn.disabled = true;
+  statusEl.textContent = '🔎 Bilgi çekiliyor…';
+  statusEl.className = 'omdb-status';
+  previewEl.style.display = 'none';
+
+  try {
+    const data = await fetchLinkPreview(url);
+    _wfPreviewData = {
+      image: (data.image && data.image.url) ? data.image.url : '',
+      title: data.title || ''
+    };
+    if (_wfPreviewData.title) document.getElementById('wf-title').value = _wfPreviewData.title;
+
+    previewEl.style.display = 'flex';
+    previewEl.innerHTML = `
+      ${_wfPreviewData.image ? `<img src="${_wfPreviewData.image}" alt="">` : ''}
+      <div class="omdb-preview-body">
+        <div class="omdb-preview-title">${data.title || url}</div>
+        <div class="omdb-preview-meta">
+          ${data.publisher ? `<span class="tip-genre">${data.publisher}</span>` : ''}
+        </div>
+        <button type="button" class="omdb-preview-clear" onclick="clearWishlistPreview()">Bilgiyi kaldır, elle gir</button>
+      </div>`;
+    statusEl.textContent = '✓ Bilgi eklendi — fiyatı kontrol etmeyi unutma';
+    statusEl.className = 'omdb-status ok';
+  } catch (e) {
+    _wfPreviewData = null;
+    statusEl.textContent = '✗ Bulunamadı — linki kontrol et ya da elle ekle. (' + e.message + ')';
+    statusEl.className = 'omdb-status err';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function clearWishlistPreview() {
+  _wfPreviewData = null;
+  document.getElementById('wf-fetch-preview').style.display = 'none';
+  document.getElementById('wf-fetch-preview').innerHTML = '';
+  document.getElementById('wf-fetch-status').textContent = '';
+}
+
+function addWishlistItem() {
+  const emoji = document.getElementById('wf-emoji').value.trim();
+  const title = document.getElementById('wf-title').value.trim();
+  const url   = document.getElementById('wf-url').value.trim();
+  const price = document.getElementById('wf-price').value.trim();
+  const priority = document.getElementById('wf-priority').value;
+  const note  = document.getElementById('wf-note').value.trim();
+  if (!title) return;
+  const preview = _wfPreviewData || {};
+  wishlist.push({
+    id: Date.now(), emoji, title, url, price, priority, note, bought: false,
+    image: preview.image || ''
+  });
+  renderWishlist();
+  saveToCloud();
+  document.getElementById('wf-emoji').value = '';
+  document.getElementById('wf-title').value = '';
+  document.getElementById('wf-url').value = '';
+  document.getElementById('wf-price').value = '';
+  document.getElementById('wf-note').value = '';
+  document.getElementById('wf-priority').value = 'orta';
+  document.getElementById('wf-search').value = '';
+  document.getElementById('wf-search-results').innerHTML = '';
+  document.getElementById('wf-search-status').textContent = '';
+  clearWishlistPreview();
+  toggleForm('wishlist-form');
+}
+
+function toggleBought(id) {
+  wishlist = wishlist.map(w => w.id === id ? { ...w, bought: !w.bought } : w);
+  renderWishlist();
+  saveToCloud();
+}
+
+function renderWishlist() {
+  const el = document.getElementById('wishlist-list');
+  const filtered = wishlist.filter(w => {
+    if (_wishlistFilter === 'alinacak') return !w.bought;
+    if (_wishlistFilter === 'alindi') return !!w.bought;
+    return true;
+  });
+  if (!filtered.length) {
+    const msg = wishlist.length
+      ? 'Bu filtreye uyan istek yok.'
+      : 'Henüz istek yok — bir tane ekle! 🎁';
+    el.innerHTML = `<div style="grid-column:1/-1;padding:32px 0;text-align:center;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;color:#6B7C8C">${msg}</div>`;
+    return;
+  }
+  el.innerHTML = filtered.map((w, idx) => `
+    <div class="wishlist-card deletable${w.bought ? ' bought' : ''}" style="--stagger:${Math.min(idx,10) * 120}ms">
+      <button class="edit-btn" onclick="openEdit('wishlist',${w.id})">✎</button>
+      <button class="del-btn" onclick="deleteItem(event,'wishlist',${w.id})">×</button>
+      <div class="wishlist-card-media">
+        ${w.image
+          ? `<img src="${w.image}" alt="">`
+          : `<span class="wl-emoji">${w.emoji || '🎁'}</span>`}
+        ${w.priority ? `<span class="cat-badge ${PRIORITY_CSS[w.priority] || 'cat-pri-orta'} wishlist-card-priority">${PRIORITY_LABELS[w.priority] || w.priority}</span>` : ''}
+      </div>
+      <div class="wishlist-card-body">
+        <div class="wishlist-card-title">${w.title}</div>
+        <div class="wishlist-card-meta">
+          ${w.price ? `<span class="price-badge">${w.price}</span>` : ''}
+        </div>
+        ${w.note ? `<div class="wishlist-card-note">${w.note}</div>` : ''}
+        <div class="wishlist-card-footer">
+          <button class="watched-btn${w.bought ? ' watched' : ''}" onclick="toggleBought(${w.id})">${w.bought ? '🎁 Alındı' : 'Alınacak'}</button>
+          ${w.url ? `<a class="imdb-link" href="${w.url}" target="_blank" rel="noopener">Git →</a>` : ''}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function filterWishlist(status) {
+  _wishlistFilter = status;
+  document.querySelectorAll('#tab-wishlist .tips-cat-btn').forEach((b, i) => {
+    const order = ['hepsi', 'alinacak', 'alindi'];
+    b.classList.toggle('active', order[i] === status);
+  });
+  renderWishlist();
+}
+
+
 /* ══════════════ PHOTOS ══════════════ */
 
 let _pendingUploads = 0;
@@ -1886,12 +2407,13 @@ function addTip() {
 function openEdit(list, id) {
   _editCtx = { list, id };
   const fields = document.getElementById('edit-modal-fields');
-  const titles = { movies: 'Film/diziyi düzenle', tips: 'Öneriyi düzenle' };
+  const titles = { movies: 'Film/diziyi düzenle', tips: 'Öneriyi düzenle', wishlist: 'İsteği düzenle' };
   document.getElementById('edit-modal-title').textContent = titles[list] || 'Düzenle';
 
   let item;
   if (list === 'movies') item = movies.find(x => x.id === id);
   else if (list === 'tips') item = tips.find(x => x.id === id);
+  else if (list === 'wishlist') item = wishlist.find(x => x.id === id);
 
   if (list === 'movies') {
     const types = ['film','dizi'];
@@ -1918,6 +2440,21 @@ function openEdit(list, id) {
         <div class="form-field"><label>Bölge</label><input id="ef-area" value="${item.area||''}"></div>
       </div>
       <div class="form-field"><label>Not</label><textarea id="ef-desc" rows="2">${item.note||''}</textarea></div>`;
+  } else if (list === 'wishlist') {
+    const pris = ['dusuk','orta','yuksek'];
+    fields.innerHTML = `
+      <div class="form-row">
+        <div class="form-field" style="max-width:70px"><label>Emoji</label><input id="ef-emoji" value="${item.emoji||''}"></div>
+        <div class="form-field"><label>Ürün adı</label><input id="ef-title" value="${item.title}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field" style="max-width:110px"><label>Fiyat</label><input id="ef-price" value="${item.price||''}"></div>
+        <div class="form-field"><label>Öncelik</label>
+          <select id="ef-priority">${pris.map(p => `<option value="${p}"${item.priority===p?' selected':''}>${PRIORITY_LABELS[p]}</option>`).join('')}</select>
+        </div>
+      </div>
+      <div class="form-field"><label>Link</label><input id="ef-url" value="${item.url||''}"></div>
+      <div class="form-field"><label>Not</label><textarea id="ef-desc" rows="2">${item.note||''}</textarea></div>`;
   }
 
   document.getElementById('edit-modal').classList.add('open');
@@ -1939,12 +2476,14 @@ function saveEdit() {
       if (x.id !== id) return x;
       if (list === 'movies') return { ...x, emoji: get('ef-emoji') || x.emoji, title: get('ef-title') || x.title, type: get('ef-type') || x.type, note: get('ef-desc') };
       if (list === 'tips') return { ...x, emoji: get('ef-emoji') || x.emoji, name: get('ef-title') || x.name, cat: get('ef-cat') || x.cat, area: get('ef-area'), note: get('ef-desc') };
+      if (list === 'wishlist') return { ...x, emoji: get('ef-emoji') || x.emoji, title: get('ef-title') || x.title, price: get('ef-price'), priority: get('ef-priority') || x.priority, url: get('ef-url'), note: get('ef-desc') };
       return x;
     });
   }
 
   if (list === 'movies') { movies = patch(movies); renderMovies(); }
   else if (list === 'tips') { tips = patch(tips); renderTips(); }
+  else if (list === 'wishlist') { wishlist = patch(wishlist); renderWishlist(); }
 
   closeEdit();
   saveToCloud();
@@ -1955,6 +2494,7 @@ function deleteItem(ev, list, id) {
   const doDelete = () => {
     if (list === 'movies') { movies = movies.filter(x => x.id !== id); renderMovies(); }
     else if (list === 'tips') { tips = tips.filter(x => x.id !== id); renderTips(); }
+    else if (list === 'wishlist') { wishlist = wishlist.filter(x => x.id !== id); renderWishlist(); }
     saveToCloud();
   };
   if (card) {
@@ -1966,7 +2506,7 @@ function deleteItem(ev, list, id) {
 }
 
 function switchTab(id) {
-  const tabIds = ['movies','tips','photos'];
+  const tabIds = ['movies','tips','wishlist','photos'];
   document.querySelectorAll('.tab-btn').forEach((b, i) => {
     b.classList.toggle('active', tabIds[i] === id);
   });
@@ -1975,12 +2515,14 @@ function switchTab(id) {
   });
   if (id === 'movies') renderMovies();
   else if (id === 'tips') renderTips();
+  else if (id === 'wishlist') renderWishlist();
   else if (id === 'photos') renderPhotos();
 }
 
 const DEFAULT_DATA = {
   movies: [],
-  tips: []
+  tips: [],
+  wishlist: []
 };
 
 const CACHE_KEY = 'bktlist_cache_v2';
@@ -1995,8 +2537,10 @@ function writeCache(data) {
 function applyData(d) {
   movies = d.movies ? d.movies : DEFAULT_DATA.movies;
   tips   = d.tips   ? d.tips   : DEFAULT_DATA.tips;
+  wishlist = d.wishlist ? d.wishlist : DEFAULT_DATA.wishlist;
   renderMovies();
   renderTips();
+  renderWishlist();
 }
 
 const cached = loadCache();
