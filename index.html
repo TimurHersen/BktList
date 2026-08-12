@@ -105,7 +105,7 @@
   /* One restrained paper-cut composition: broad shapes, lots of negative space. */
   .paper-sun {
     right: -20vw;
-    top: -15vw;
+    top: -22vw;
     width: min(470px, 72vw);
     height: min(470px, 72vw);
     opacity: .96;
@@ -149,7 +149,7 @@
   }
 
   @media (max-width: 480px) {
-    .paper-sun { right: -30vw; top: -13vw; width: 330px; height: 330px; }
+    .paper-sun { right: -30vw; top: -20vw; width: 330px; height: 330px; }
     .paper-arch { top: 19%; width: 360px; height: 500px; }
     .paper-city { height: 190px; }
     .paper-corner { left: -55px; top: 5%; width: 190px; height: 190px; }
@@ -372,12 +372,16 @@
     inset: 0;
     background: rgba(15,13,10,0.78);
     z-index: 100;
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .25s ease, visibility .25s ease;
   }
-  .modal-overlay.open { display: flex; }
+  .modal-overlay.open { opacity: 1; visibility: visible; pointer-events: auto; }
   .modal {
     background: var(--card);
     border: var(--line);
@@ -389,7 +393,10 @@
     flex-direction: column;
     gap: 12px;
     box-shadow: var(--shadow-lg);
+    transform: translateY(18px) scale(.96);
+    transition: transform .32s cubic-bezier(.16,.84,.44,1);
   }
+  .modal-overlay.open .modal { transform: translateY(0) scale(1); }
   .modal-title {
     font-family: var(--font-display);
     font-size: 26px;
@@ -427,14 +434,22 @@
     background: var(--card);
     border: var(--line-soft);
     border-radius: var(--radius);
-    padding: 16px;
     margin-top: 12px;
-    display: none;
+    box-shadow: var(--shadow-sm);
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows .38s cubic-bezier(.16,.84,.44,1), opacity .3s ease;
+  }
+  .add-form.open { grid-template-rows: 1fr; opacity: 1; }
+  .add-form-inner {
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
     flex-direction: column;
     gap: 12px;
-    box-shadow: var(--shadow-sm);
+    padding: 16px;
   }
-  .add-form.open { display: flex; }
   .form-row { display: flex; gap: 10px; }
   .form-field { display: flex; flex-direction: column; gap: 5px; flex: 1; }
   .form-field label {
@@ -656,6 +671,10 @@
   .tips-cat-btn.active { background: var(--gold); color: var(--bg-deep); border-color: var(--gold); }
 
   .tips-list { display: flex; flex-direction: column; gap: 12px; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(18px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
   .tip-card {
     background: rgba(34, 30, 23, 0.86);
     backdrop-filter: blur(6px);
@@ -668,11 +687,20 @@
     align-items: flex-start;
     box-shadow: var(--shadow-sm);
     transition: transform 0.1s, box-shadow 0.1s, border-color .15s;
+    animation: cardIn .5s cubic-bezier(.16,.84,.44,1) both;
+    animation-delay: var(--stagger, 0ms);
   }
   .tip-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow);
     border-color: rgba(201,162,77,0.5);
+  }
+  .tip-card.removing {
+    animation: none;
+    transition: opacity .2s ease, transform .2s ease;
+    opacity: 0;
+    transform: translateY(-6px) scale(.94);
+    pointer-events: none;
   }
   .tip-icon {
     font-size: 22px;
@@ -762,10 +790,19 @@
     cursor: pointer;
     background: var(--card);
     transition: transform 0.1s, box-shadow 0.1s;
+    animation: cardIn .45s cubic-bezier(.16,.84,.44,1) both;
+    animation-delay: var(--stagger, 0ms);
   }
   .photo-tile:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow);
+  }
+  .photo-tile.removing {
+    animation: none;
+    transition: opacity .18s ease, transform .18s ease;
+    opacity: 0;
+    transform: scale(.85);
+    pointer-events: none;
   }
   .photo-tile img {
     width: 100%;
@@ -989,8 +1026,6 @@
       <circle cx="350" cy="165" r="101" fill="#E52B18"/>
       <circle cx="350" cy="165" r="72" fill="#F04A20"/>
       <circle cx="350" cy="165" r="48" fill="#A91C12"/>
-      <!-- black offset paper edge -->
-      <path d="M286 62 A128 128 0 0 1 468 176 A128 128 0 0 1 401 279 A128 128 0 0 0 430 173 A128 128 0 0 0 286 62Z" fill="#050202" opacity=".72"/>
       <!-- small cream registration accent -->
       <path d="M350 26 L359 53 L386 62 L359 71 L350 98 L341 71 L314 62 L341 53 Z" fill="#F3D1A5" opacity=".8"/>
     </g>
@@ -1083,6 +1118,7 @@
     <div class="tips-list" id="movies-list"></div>
     <button class="add-btn" onclick="toggleForm('movies-form')" style="margin-top:18px"><span class="add-btn-icon">+</span> Film/dizi ekle</button>
     <div class="add-form" id="movies-form">
+     <div class="add-form-inner">
       <div class="form-row">
         <div class="form-field">
           <label>İsim</label>
@@ -1119,6 +1155,7 @@
         <button class="btn-cancel" onclick="toggleForm('movies-form')">İptal</button>
         <button class="btn-save" onclick="addMovie()">Kaydet</button>
       </div>
+     </div>
     </div>
   </div>
 
@@ -1137,6 +1174,7 @@
     <div class="tips-list" id="tips-list"></div>
     <button class="add-btn" onclick="toggleForm('tips-form')" style="margin-top:18px"><span class="add-btn-icon">+</span> Öneri ekle</button>
     <div class="add-form" id="tips-form">
+     <div class="add-form-inner">
       <div class="form-row">
         <div class="form-field" style="max-width:70px">
           <label>Emoji</label>
@@ -1171,6 +1209,7 @@
         <button class="btn-cancel" onclick="toggleForm('tips-form')">İptal</button>
         <button class="btn-save" onclick="addTip()">Kaydet</button>
       </div>
+     </div>
     </div>
   </div>
 
@@ -1326,10 +1365,10 @@ function renderMovies() {
     el.innerHTML = `<div style="padding:32px 0;text-align:center;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;color:#6B7C8C">${msg}</div>`;
     return;
   }
-  el.innerHTML = filtered.map(m => `
-    <div class="tip-card deletable${m.watched ? ' movie-watched' : ''}">
+  el.innerHTML = filtered.map((m, idx) => `
+    <div class="tip-card deletable${m.watched ? ' movie-watched' : ''}" style="--stagger:${Math.min(idx,10) * 55}ms">
       <button class="edit-btn" onclick="openEdit('movies',${m.id})">✎</button>
-      <button class="del-btn" onclick="deleteItem('movies',${m.id})">×</button>
+      <button class="del-btn" onclick="deleteItem(event,'movies',${m.id})">×</button>
       ${m.poster
         ? `<img class="tip-poster" src="${m.poster}" alt="">`
         : `<div class="tip-icon">${m.emoji || MOVIE_TYPE_ICON[m.type] || '🎬'}</div>`}
@@ -1551,10 +1590,10 @@ function renderTips() {
     el.innerHTML = `<div style="padding:32px 0;text-align:center;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;color:#6B7C8C">Henüz öneri yok — bir tane ekle! 🚀</div>`;
     return;
   }
-  el.innerHTML = filtered.map(t => `
-    <div class="tip-card deletable">
+  el.innerHTML = filtered.map((t, idx) => `
+    <div class="tip-card deletable" style="--stagger:${Math.min(idx,10) * 55}ms">
       <button class="edit-btn" onclick="openEdit('tips',${t.id})">✎</button>
-      <button class="del-btn" onclick="deleteItem('tips',${t.id})">×</button>
+      <button class="del-btn" onclick="deleteItem(event,'tips',${t.id})">×</button>
       <div class="tip-icon">${t.emoji || '📍'}</div>
       <div class="tip-body">
         <div class="tip-name">${t.name}</div>
@@ -1607,8 +1646,8 @@ function renderPhotos() {
             </div>`;
   } else {
     html += sorted.map((p, idx) => `
-      <div class="photo-tile deletable" onclick="openSlideshow(${idx})">
-        <button class="del-btn" onclick="event.stopPropagation();deletePhoto('${p.id}')">×</button>
+      <div class="photo-tile deletable" style="--stagger:${Math.min(idx,12) * 40}ms" onclick="openSlideshow(${idx})">
+        <button class="del-btn" onclick="event.stopPropagation();deletePhoto(event,'${p.id}')">×</button>
         <img src="${p.data}" alt="" loading="lazy">
       </div>
     `).join('');
@@ -1698,9 +1737,14 @@ async function handlePhotoUpload(ev) {
   }
 }
 
-async function deletePhoto(id) {
+async function deletePhoto(ev, id) {
   const idx = photos.findIndex(p => p.id === id);
   if (idx === -1) return;
+  const tile = ev?.currentTarget?.closest('.photo-tile');
+  if (tile) {
+    tile.classList.add('removing');
+    await new Promise(r => setTimeout(r, 180));
+  }
   const removed = photos.splice(idx, 1)[0];
   renderPhotos();
   try {
@@ -1906,10 +1950,19 @@ function saveEdit() {
   saveToCloud();
 }
 
-function deleteItem(list, id) {
-  if (list === 'movies') { movies = movies.filter(x => x.id !== id); renderMovies(); }
-  else if (list === 'tips') { tips = tips.filter(x => x.id !== id); renderTips(); }
-  saveToCloud();
+function deleteItem(ev, list, id) {
+  const card = ev?.currentTarget?.closest('.tip-card');
+  const doDelete = () => {
+    if (list === 'movies') { movies = movies.filter(x => x.id !== id); renderMovies(); }
+    else if (list === 'tips') { tips = tips.filter(x => x.id !== id); renderTips(); }
+    saveToCloud();
+  };
+  if (card) {
+    card.classList.add('removing');
+    setTimeout(doDelete, 200);
+  } else {
+    doDelete();
+  }
 }
 
 function switchTab(id) {
@@ -1920,6 +1973,9 @@ function switchTab(id) {
   document.querySelectorAll('.panel').forEach(p => {
     p.classList.toggle('active', p.id === 'tab-' + id);
   });
+  if (id === 'movies') renderMovies();
+  else if (id === 'tips') renderTips();
+  else if (id === 'photos') renderPhotos();
 }
 
 const DEFAULT_DATA = {
