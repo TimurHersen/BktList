@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Alex+Brush&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -942,6 +943,133 @@
   .vote-btn.voted { background: var(--gold); }
   .vote-count { font-size: 13px; font-family: var(--font-mono); font-weight: 700; color: var(--gold-light); min-width: 16px; text-align: center; }
 
+  /* ═══════════ HARİTA / MAP ═══════════ */
+  .map-wrap {
+    position: relative;
+    width: 100%;
+    height: 380px;
+    border: var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    background: var(--card);
+  }
+  #places-map { width: 100%; height: 100%; background: var(--bg-deep); }
+  .map-pick-banner {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 500;
+    background: var(--gold);
+    color: var(--bg-deep);
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-sm);
+    display: none;
+    white-space: nowrap;
+  }
+  .map-pick-banner.show { display: block; }
+
+  /* Leaflet dark theme overrides so the map matches the deco palette */
+  .leaflet-container { background: var(--bg-deep); font-family: var(--font-body); }
+  .leaflet-tile { filter: saturate(0.55) brightness(0.62) sepia(0.18) hue-rotate(-8deg) contrast(1.05); }
+  .leaflet-popup-content-wrapper {
+    background: var(--card);
+    color: var(--ink);
+    border: var(--line);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+  }
+  .leaflet-popup-tip { background: var(--card); border: var(--line-soft); }
+  .leaflet-popup-content { margin: 10px 12px; }
+  .leaflet-container a.leaflet-popup-close-button { color: var(--ink-soft); }
+  .leaflet-bar a, .leaflet-bar a:hover {
+    background: var(--card);
+    color: var(--ink);
+    border-bottom: 1px solid rgba(201,162,77,0.3);
+  }
+  .leaflet-control-attribution { background: rgba(25,8,6,0.8) !important; color: var(--ink-soft) !important; }
+  .leaflet-control-attribution a { color: var(--gold-light) !important; }
+
+  .place-pin {
+    width: 34px;
+    height: 34px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    background: var(--gold);
+    border: 2px solid var(--bg-deep);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .place-pin.visited { background: var(--jade); }
+  .place-pin span {
+    transform: rotate(45deg);
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .map-popup-title { font-family: var(--font-head); font-weight: 600; font-size: 13.5px; color: var(--ink); margin-bottom: 4px; }
+  .map-popup-meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+  .map-popup-btn {
+    background: var(--gold);
+    color: var(--bg-deep);
+    border: none;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+  }
+
+  .places-list { display: flex; flex-direction: column; gap: 12px; margin-top: 18px; }
+
+  .itinerary-block { display: flex; flex-direction: column; gap: 8px; }
+  .itinerary-step {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: var(--bg-deep);
+    border: var(--line-soft);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+  }
+  .itinerary-step-time {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--gold-light);
+    min-width: 44px;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+  .itinerary-step-text { flex: 1; font-size: 13px; font-family: var(--font-body); font-weight: 500; color: var(--ink); line-height: 1.5; }
+  .itinerary-step-remove {
+    background: none;
+    border: none;
+    color: var(--rose);
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0 2px;
+  }
+  .itinerary-empty { font-size: 12px; color: var(--ink-soft); font-family: var(--font-body); font-weight: 500; padding: 4px 2px; }
+  .itinerary-add-row { display: flex; gap: 8px; }
+  .itinerary-add-row input:first-child { max-width: 80px; }
+
+  .place-detail-address { font-size: 12.5px; color: var(--ink-soft); font-family: var(--font-body); font-weight: 500; margin-bottom: 10px; line-height: 1.5; }
+
   /* ═══════════ PHOTOS / RESİMLER ═══════════ */
   .photo-upload-row {
     display: flex;
@@ -1288,6 +1416,7 @@
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('movies')">Filmler &amp; Diziler</button>
     <button class="tab-btn" onclick="switchTab('tips')">Öneriler</button>
+    <button class="tab-btn" onclick="switchTab('map')">Harita <span class="tab-icon" aria-hidden="true">🗺️</span></button>
     <button class="tab-btn" onclick="switchTab('wishlist')">İstek Listesi <span class="tab-icon" aria-hidden="true">🎁</span></button>
     <button class="tab-btn" onclick="switchTab('photos')">Resimler <span class="tab-icon" aria-hidden="true">📸</span></button>
   </div>
@@ -1396,6 +1525,80 @@
       <div class="form-actions">
         <button class="btn-cancel" onclick="toggleForm('tips-form')">İptal</button>
         <button class="btn-save" onclick="addTip()">Kaydet</button>
+      </div>
+     </div>
+    </div>
+  </div>
+
+  <!-- HARİTA / MAP -->
+  <div class="panel" id="tab-map">
+    <p class="sec-label">Gitmek istediğimiz yerler</p>
+    <div class="map-wrap">
+      <div class="map-pick-banner" id="map-pick-banner">📍 Pin bırakmak için haritaya dokun</div>
+      <div id="places-map"></div>
+    </div>
+    <div class="places-list" id="places-list"></div>
+    <button class="add-btn" onclick="togglePlaceForm()" style="margin-top:18px"><span class="add-btn-icon">+</span> Yer ekle</button>
+    <div class="add-form" id="places-form">
+     <div class="add-form-inner">
+      <div class="form-field">
+        <label>Adres / yer ara</label>
+        <div class="form-row" style="gap:8px">
+          <input id="pf-search" type="text" placeholder="örn. Kölner Dom, Köln" style="flex:1">
+          <button class="btn-save" type="button" onclick="searchPlaceForForm()" style="white-space:nowrap">Ara</button>
+        </div>
+      </div>
+      <div id="pf-search-status" class="omdb-status"></div>
+      <div id="pf-search-results" class="wf-search-results"></div>
+
+      <div class="wf-divider"><span>veya haritaya tıkla</span></div>
+      <button class="add-btn" type="button" onclick="startPlacePicking()" id="pf-pick-btn" style="margin-top:0">
+        <span class="add-btn-icon">📍</span> Haritadan pin bırak
+      </button>
+      <div id="pf-pick-status" class="omdb-status"></div>
+
+      <div class="form-row">
+        <div class="form-field" style="max-width:70px">
+          <label>Emoji</label>
+          <input id="pf-emoji" type="text" placeholder="📍">
+        </div>
+        <div class="form-field">
+          <label>Yer adı</label>
+          <input id="pf-title" type="text" placeholder="Yer adı">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Kategori</label>
+          <select id="pf-cat">
+            <option value="sev">🏛️ Gezilecek Yer</option>
+            <option value="bar">🍺 Bar</option>
+            <option value="mat">🍽️ Yemek</option>
+            <option value="akt">🎯 Aktivite</option>
+            <option value="kul">✨ Eğlenceli</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Adres (otomatik dolabilir)</label>
+        <input id="pf-address" type="text" placeholder="Adres">
+      </div>
+      <div class="form-field">
+        <label>Not</label>
+        <textarea id="pf-note" rows="2" placeholder="Neden gitmeliyiz?"></textarea>
+      </div>
+
+      <div class="wf-divider"><span>gezi planı (opsiyonel)</span></div>
+      <div class="itinerary-block" id="pf-itinerary-list"></div>
+      <div class="itinerary-add-row">
+        <input id="pf-step-time" type="text" placeholder="10:00">
+        <input id="pf-step-text" type="text" placeholder="Adım açıklaması" style="flex:1">
+        <button class="btn-save" type="button" onclick="addItineraryStepToForm()" style="white-space:nowrap">Ekle</button>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="togglePlaceForm()">İptal</button>
+        <button class="btn-save" onclick="addPlace()">Kaydet</button>
       </div>
      </div>
     </div>
@@ -1521,6 +1724,19 @@
   </div>
 </div>
 
+<!-- ═══════════ PLACE DETAIL MODAL ═══════════ -->
+<div class="modal-overlay" id="place-detail-modal" onclick="if(event.target===this)closePlaceDetail()">
+  <div class="modal">
+    <div class="modal-title" id="pd-title">Yer</div>
+    <div id="pd-body" style="display:flex;flex-direction:column;gap:10px;"></div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closePlaceDetail()">Kapat</button>
+      <button class="btn-cancel" onclick="deletePlaceFromDetail()" style="color:var(--rose);border-color:var(--rose-deep);">Sil</button>
+      <button class="btn-save" onclick="togglePlaceVisitedFromDetail()" id="pd-visited-btn">Ziyaret edildi</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════ SLIDESHOW LIGHTBOX ═══════════ -->
 <div class="slideshow" id="slideshow" onclick="if(event.target===this)closeSlideshow()">
   <span class="slideshow-counter" id="ss-counter">1 / 1</span>
@@ -1537,6 +1753,7 @@
   </div>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="wobble.js"></script>
 <script>
 /* Firebase Realtime Database — bktlist project */
@@ -1563,8 +1780,18 @@ const AMAZON_SEARCH_COUNTRY = 'TR';
 let _editCtx = null;
 let _mfOmdbData = null; // holds fetched IMDb info for the movie currently being added
 
-let movies = [], tips = [], wishlist = [];
+let movies = [], tips = [], wishlist = [], places = [];
 let photos = []; // [{ id (firebase key), data (base64), uploaded (ts) }]
+
+/* ── places / map state ── */
+let _placesMap = null;
+let _placeMarkers = {};      // place id -> Leaflet marker
+let _placePicking = false;   // true while waiting for a map click to drop a pin
+let _pfPlaceInfo = null;     // { lat, lng, address } for the place currently being added
+let _pfTempMarker = null;    // preview marker while adding a place
+let _pfItinerarySteps = [];  // itinerary steps built up in the add-place form
+let _pfSearchResults = [];   // last geocode search results
+let _pdCurrentId = null;     // id of the place shown in the detail modal
 let _moviesFilter = 'hepsi';
 let _moviesStatusFilter = 'hepsi'; // 'hepsi' | 'izlenecek' | 'izlendi'
 let _moviesGenreFilters = new Set(); // empty set = all genres
@@ -1599,11 +1826,11 @@ async function saveToCloud() {
     const res = await fetch(DB_URL, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ movies, tips, wishlist })
+      body: JSON.stringify({ movies, tips, wishlist, places })
     });
     if (!res.ok) throw new Error();
     await res.json();
-    writeCache({ movies, tips });
+    writeCache({ movies, tips, places });
     showStatus('Kaydedildi ✓');
   } catch(e) {
     showStatus('Kayıt başarısız ✗', false);
@@ -1848,6 +2075,7 @@ function addMovie() {
 
 const CAT_LABELS = { bar:'Bar', mat:'Yemek', sev:'Gezilecek Yer', akt:'Aktivite', kul:'Eğlenceli' };
 const CAT_CSS    = { bar:'cat-bar', mat:'cat-mat', sev:'cat-sev', akt:'cat-akt', kul:'cat-kul' };
+const PLACE_CAT_ICON = { bar:'🍺', mat:'🍽️', sev:'🏛️', akt:'🎯', kul:'✨' };
 let _tipsFilter = 'alla';
 
 function renderTips() {
@@ -1889,6 +2117,339 @@ function voteTip(id) {
   tips = tips.map(t => t.id === id ? { ...t, votes: (t.votes || 0) + 1 } : t);
   renderTips();
   saveToCloud();
+}
+
+
+/* ══════════════ HARİTA / MAP — gitmek istediğimiz yerler ══════════════ */
+
+function initPlacesMap() {
+  const el = document.getElementById('places-map');
+  if (!el || typeof L === 'undefined') return;
+  if (_placesMap) {
+    _placesMap.invalidateSize();
+    renderPlaceMarkers();
+    return;
+  }
+  _placesMap = L.map(el, { zoomControl: true }).setView([50.9375, 6.9603], 12); // default: Köln
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
+  }).addTo(_placesMap);
+  _placesMap.on('click', (e) => { if (_placePicking) handleMapPick(e.latlng); });
+  renderPlaceMarkers();
+  fitPlacesMapToMarkers();
+}
+
+function fitPlacesMapToMarkers() {
+  if (!_placesMap) return;
+  const pts = places.filter(p => p.lat != null && p.lng != null).map(p => [p.lat, p.lng]);
+  if (!pts.length) return;
+  if (pts.length === 1) _placesMap.setView(pts[0], 14);
+  else _placesMap.fitBounds(pts, { padding: [30, 30] });
+}
+
+function makePinIcon(place) {
+  const emoji = place.emoji || PLACE_CAT_ICON[place.cat] || '📍';
+  return L.divIcon({
+    className: '',
+    html: `<div class="place-pin${place.visited ? ' visited' : ''}"><span>${emoji}</span></div>`,
+    iconSize: [34, 34],
+    iconAnchor: [17, 32],
+    popupAnchor: [0, -30]
+  });
+}
+
+function renderPlaceMarkers() {
+  if (!_placesMap) return;
+  Object.values(_placeMarkers).forEach(m => _placesMap.removeLayer(m));
+  _placeMarkers = {};
+  places.forEach(p => {
+    if (p.lat == null || p.lng == null) return;
+    const marker = L.marker([p.lat, p.lng], { icon: makePinIcon(p) }).addTo(_placesMap);
+    marker.bindPopup(`
+      <div class="map-popup-title">${p.emoji || PLACE_CAT_ICON[p.cat] || '📍'} ${p.title}</div>
+      <div class="map-popup-meta">
+        <span class="cat-badge ${CAT_CSS[p.cat] || 'cat-kul'}">${CAT_LABELS[p.cat] || p.cat}</span>
+        ${p.visited ? `<span class="cat-badge" style="background:var(--jade);color:var(--bg-deep)">✓ Ziyaret edildi</span>` : ''}
+      </div>
+      <button class="map-popup-btn" onclick="openPlaceDetail(${p.id})">Detay &amp; Plan</button>
+    `);
+    marker.on('click', () => marker.openPopup());
+    _placeMarkers[p.id] = marker;
+  });
+}
+
+async function handleMapPick(latlng) {
+  _placePicking = false;
+  document.getElementById('map-pick-banner').classList.remove('show');
+  const statusEl = document.getElementById('pf-pick-status');
+  statusEl.textContent = '📍 Konum seçildi';
+  statusEl.className = 'omdb-status ok';
+  _pfPlaceInfo = { lat: latlng.lat, lng: latlng.lng, address: '' };
+
+  if (_pfTempMarker) _placesMap.removeLayer(_pfTempMarker);
+  _pfTempMarker = L.marker([latlng.lat, latlng.lng]).addTo(_placesMap);
+
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`, { headers: { 'Accept-Language': 'tr' } });
+    const data = await res.json();
+    if (data && data.display_name) {
+      document.getElementById('pf-address').value = data.display_name;
+      _pfPlaceInfo.address = data.display_name;
+    }
+  } catch (e) { /* reverse geocoding is best-effort — pin is already placed either way */ }
+}
+
+function startPlacePicking() {
+  _placePicking = true;
+  document.getElementById('map-pick-banner').classList.add('show');
+  document.getElementById('pf-pick-status').textContent = '';
+  document.getElementById('places-map').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (_placesMap) _placesMap.invalidateSize();
+}
+
+async function geocodeSearch(query) {
+  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`;
+  let res;
+  try {
+    res = await fetch(url, { headers: { 'Accept-Language': 'tr' } });
+  } catch (e) {
+    throw new Error('Ağa ulaşılamadı: ' + e.message);
+  }
+  let data;
+  try {
+    data = await res.json();
+  } catch (e) {
+    throw new Error('Sunucu geçersiz yanıt verdi (HTTP ' + res.status + ')');
+  }
+  if (!Array.isArray(data) || !data.length) throw new Error('Sonuç bulunamadı');
+  return data;
+}
+
+async function searchPlaceForForm() {
+  const query = document.getElementById('pf-search').value.trim();
+  const statusEl = document.getElementById('pf-search-status');
+  const resultsEl = document.getElementById('pf-search-results');
+  if (!query) {
+    statusEl.textContent = '⚠️ Önce ne aradığını yaz.';
+    statusEl.className = 'omdb-status err';
+    return;
+  }
+  statusEl.textContent = '🔎 Aranıyor…';
+  statusEl.className = 'omdb-status';
+  resultsEl.innerHTML = '';
+  try {
+    const results = await geocodeSearch(query);
+    _pfSearchResults = results;
+    resultsEl.innerHTML = results.map((r, idx) => `
+      <div class="wf-result-card">
+        <div class="wf-result-body">
+          <div class="wf-result-title">${r.display_name}</div>
+        </div>
+        <button type="button" class="wf-result-pick" onclick="selectPlaceSearchResult(${idx})">Seç</button>
+      </div>`).join('');
+    statusEl.textContent = `✓ ${results.length} sonuç bulundu`;
+    statusEl.className = 'omdb-status ok';
+  } catch (e) {
+    _pfSearchResults = [];
+    statusEl.textContent = '✗ ' + e.message;
+    statusEl.className = 'omdb-status err';
+  }
+}
+
+function selectPlaceSearchResult(idx) {
+  const r = _pfSearchResults[idx];
+  if (!r) return;
+  _pfPlaceInfo = { lat: parseFloat(r.lat), lng: parseFloat(r.lon), address: r.display_name };
+  document.getElementById('pf-address').value = r.display_name;
+  if (!document.getElementById('pf-title').value.trim()) {
+    document.getElementById('pf-title').value = (r.display_name || '').split(',')[0];
+  }
+  document.getElementById('pf-search-results').innerHTML = '';
+  document.getElementById('pf-search-status').textContent = '✓ Konum seçildi';
+  document.getElementById('pf-search-status').className = 'omdb-status ok';
+  if (_placesMap) {
+    if (_pfTempMarker) _placesMap.removeLayer(_pfTempMarker);
+    _pfTempMarker = L.marker([_pfPlaceInfo.lat, _pfPlaceInfo.lng]).addTo(_placesMap);
+    _placesMap.setView([_pfPlaceInfo.lat, _pfPlaceInfo.lng], 15);
+  }
+}
+
+function renderItineraryStepsForm() {
+  const el = document.getElementById('pf-itinerary-list');
+  if (!el) return;
+  if (!_pfItinerarySteps.length) {
+    el.innerHTML = `<div class="itinerary-empty">Henüz adım eklenmedi.</div>`;
+    return;
+  }
+  el.innerHTML = _pfItinerarySteps.map((s, idx) => `
+    <div class="itinerary-step">
+      ${s.time ? `<span class="itinerary-step-time">${s.time}</span>` : ''}
+      <span class="itinerary-step-text">${s.text}</span>
+      <button type="button" class="itinerary-step-remove" onclick="removeItineraryStepFromForm(${idx})">×</button>
+    </div>`).join('');
+}
+
+function addItineraryStepToForm() {
+  const time = document.getElementById('pf-step-time').value.trim();
+  const text = document.getElementById('pf-step-text').value.trim();
+  if (!text) return;
+  _pfItinerarySteps.push({ time, text });
+  document.getElementById('pf-step-time').value = '';
+  document.getElementById('pf-step-text').value = '';
+  renderItineraryStepsForm();
+}
+
+function removeItineraryStepFromForm(idx) {
+  _pfItinerarySteps.splice(idx, 1);
+  renderItineraryStepsForm();
+}
+
+function togglePlaceForm() {
+  toggleForm('places-form');
+  const isOpen = document.getElementById('places-form').classList.contains('open');
+  if (isOpen) {
+    if (_placesMap) _placesMap.invalidateSize();
+  } else {
+    _placePicking = false;
+    document.getElementById('map-pick-banner').classList.remove('show');
+    if (_pfTempMarker && _placesMap) { _placesMap.removeLayer(_pfTempMarker); _pfTempMarker = null; }
+  }
+}
+
+function addPlace() {
+  const emoji = document.getElementById('pf-emoji').value.trim();
+  const title = document.getElementById('pf-title').value.trim();
+  const cat = document.getElementById('pf-cat').value;
+  const address = document.getElementById('pf-address').value.trim();
+  const note = document.getElementById('pf-note').value.trim();
+  if (!title) return;
+  if (!_pfPlaceInfo || _pfPlaceInfo.lat == null) {
+    const statusEl = document.getElementById('pf-search-status');
+    statusEl.textContent = '⚠️ Önce yeri haritada ara ya da haritaya tıklayarak pin bırak.';
+    statusEl.className = 'omdb-status err';
+    return;
+  }
+
+  places.push({
+    id: Date.now(), emoji, title, cat, address, note, visited: false,
+    lat: _pfPlaceInfo.lat, lng: _pfPlaceInfo.lng,
+    itinerary: _pfItinerarySteps.slice()
+  });
+  renderPlacesList();
+  renderPlaceMarkers();
+  fitPlacesMapToMarkers();
+  saveToCloud();
+
+  document.getElementById('pf-emoji').value = '';
+  document.getElementById('pf-title').value = '';
+  document.getElementById('pf-address').value = '';
+  document.getElementById('pf-note').value = '';
+  document.getElementById('pf-search').value = '';
+  document.getElementById('pf-search-results').innerHTML = '';
+  document.getElementById('pf-search-status').textContent = '';
+  document.getElementById('pf-pick-status').textContent = '';
+  _pfItinerarySteps = [];
+  renderItineraryStepsForm();
+  _pfPlaceInfo = null;
+  if (_pfTempMarker && _placesMap) { _placesMap.removeLayer(_pfTempMarker); _pfTempMarker = null; }
+  togglePlaceForm();
+}
+
+function renderPlacesList() {
+  const el = document.getElementById('places-list');
+  if (!el) return;
+  if (!places.length) {
+    el.innerHTML = `<div style="padding:32px 0;text-align:center;font-size:13px;font-family:'Inter',sans-serif;font-weight:600;color:#6B7C8C">Henüz yer eklenmedi — haritaya bir pin bırak! 🗺️</div>`;
+    return;
+  }
+  el.innerHTML = places.map((p, idx) => `
+    <div class="tip-card deletable${p.visited ? ' movie-watched' : ''}" style="--stagger:${Math.min(idx,10) * 120}ms; cursor:pointer;" onclick="openPlaceDetail(${p.id})">
+      <button class="del-btn" onclick="event.stopPropagation();deletePlace(event,${p.id})">×</button>
+      <div class="tip-icon">${p.emoji || PLACE_CAT_ICON[p.cat] || '📍'}</div>
+      <div class="tip-body">
+        <div class="tip-name">${p.title}</div>
+        <div class="tip-meta">
+          <span class="cat-badge ${CAT_CSS[p.cat] || 'cat-kul'}">${CAT_LABELS[p.cat] || p.cat}</span>
+          ${p.itinerary && p.itinerary.length ? `<span>🗓️ ${p.itinerary.length} adım</span>` : ''}
+        </div>
+        ${p.note ? `<div class="tip-note">${p.note}</div>` : ''}
+      </div>
+      <div class="tip-voted">
+        <span class="watched-btn${p.visited ? ' watched' : ''}">${p.visited ? '✓ Gidildi' : 'Planda'}</span>
+      </div>
+    </div>`).join('');
+}
+
+function deletePlace(ev, id) {
+  const card = ev?.currentTarget?.closest('.tip-card');
+  const doDelete = () => {
+    places = places.filter(x => x.id !== id);
+    renderPlacesList();
+    renderPlaceMarkers();
+    saveToCloud();
+  };
+  if (card) {
+    card.classList.add('removing');
+    setTimeout(doDelete, 200);
+  } else {
+    doDelete();
+  }
+}
+
+function openPlaceDetail(id) {
+  const p = places.find(x => x.id === id);
+  if (!p) return;
+  _pdCurrentId = id;
+  document.getElementById('pd-title').textContent = `${p.emoji || PLACE_CAT_ICON[p.cat] || '📍'} ${p.title}`;
+  const stepsHtml = (p.itinerary && p.itinerary.length)
+    ? p.itinerary.map(s => `
+      <div class="itinerary-step">
+        ${s.time ? `<span class="itinerary-step-time">${s.time}</span>` : ''}
+        <span class="itinerary-step-text">${s.text}</span>
+      </div>`).join('')
+    : `<div class="itinerary-empty">Henüz bir plan eklenmedi.</div>`;
+  document.getElementById('pd-body').innerHTML = `
+    <div class="map-popup-meta">
+      <span class="cat-badge ${CAT_CSS[p.cat] || 'cat-kul'}">${CAT_LABELS[p.cat] || p.cat}</span>
+      ${p.visited ? `<span class="cat-badge" style="background:var(--jade);color:var(--bg-deep)">✓ Ziyaret edildi</span>` : ''}
+    </div>
+    ${p.address ? `<div class="place-detail-address">📍 ${p.address}</div>` : ''}
+    ${p.note ? `<div class="tip-note">${p.note}</div>` : ''}
+    <div class="wf-divider"><span>gezi planı</span></div>
+    <div class="itinerary-block">${stepsHtml}</div>
+    ${(p.lat != null && p.lng != null) ? `<a class="imdb-link" href="https://www.openstreetmap.org/?mlat=${p.lat}&mlon=${p.lng}#map=17/${p.lat}/${p.lng}" target="_blank" rel="noopener">Haritada aç →</a>` : ''}
+  `;
+  document.getElementById('pd-visited-btn').textContent = p.visited ? 'Ziyaret edilmedi olarak işaretle' : 'Ziyaret edildi';
+  document.getElementById('place-detail-modal').classList.add('open');
+  if (_placesMap && _placeMarkers[id]) {
+    _placesMap.setView([p.lat, p.lng], Math.max(_placesMap.getZoom(), 14));
+    _placeMarkers[id].openPopup();
+  }
+}
+
+function closePlaceDetail() {
+  document.getElementById('place-detail-modal').classList.remove('open');
+  _pdCurrentId = null;
+}
+
+function togglePlaceVisitedFromDetail() {
+  if (_pdCurrentId == null) return;
+  places = places.map(p => p.id === _pdCurrentId ? { ...p, visited: !p.visited } : p);
+  renderPlacesList();
+  renderPlaceMarkers();
+  saveToCloud();
+  openPlaceDetail(_pdCurrentId);
+}
+
+function deletePlaceFromDetail() {
+  if (_pdCurrentId == null) return;
+  const id = _pdCurrentId;
+  places = places.filter(x => x.id !== id);
+  renderPlacesList();
+  renderPlaceMarkers();
+  saveToCloud();
+  closePlaceDetail();
 }
 
 
@@ -2506,7 +3067,7 @@ function deleteItem(ev, list, id) {
 }
 
 function switchTab(id) {
-  const tabIds = ['movies','tips','wishlist','photos'];
+  const tabIds = ['movies','tips','map','wishlist','photos'];
   document.querySelectorAll('.tab-btn').forEach((b, i) => {
     b.classList.toggle('active', tabIds[i] === id);
   });
@@ -2517,12 +3078,14 @@ function switchTab(id) {
   else if (id === 'tips') renderTips();
   else if (id === 'wishlist') renderWishlist();
   else if (id === 'photos') renderPhotos();
+  else if (id === 'map') { renderPlacesList(); setTimeout(initPlacesMap, 30); }
 }
 
 const DEFAULT_DATA = {
   movies: [],
   tips: [],
-  wishlist: []
+  wishlist: [],
+  places: []
 };
 
 const CACHE_KEY = 'bktlist_cache_v2';
@@ -2538,9 +3101,12 @@ function applyData(d) {
   movies = d.movies ? d.movies : DEFAULT_DATA.movies;
   tips   = d.tips   ? d.tips   : DEFAULT_DATA.tips;
   wishlist = d.wishlist ? d.wishlist : DEFAULT_DATA.wishlist;
+  places = d.places ? d.places : DEFAULT_DATA.places;
   renderMovies();
   renderTips();
   renderWishlist();
+  renderPlacesList();
+  if (_placesMap) renderPlaceMarkers();
 }
 
 const cached = loadCache();
