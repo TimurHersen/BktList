@@ -210,7 +210,7 @@
 
   /* ─── TABS ─── */
   .tabs {
-    max-width: 600px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 32px 20px 0;
     position: relative;
@@ -218,7 +218,7 @@
   }
   .tab-bar {
     display: flex;
-    justify-content: center;
+    justify-content: safe center;
     flex-wrap: nowrap;
     gap: 6px 28px;
     overflow-x: auto;
@@ -280,6 +280,8 @@
     z-index: 1;
   }
   .panel { display: none; padding-top: 26px; }
+  .panels:has(#tab-game.active) { max-width: 1180px; }
+  .game-frame { display: block; width: 100%; height: 80vh; border: 0; background: var(--bg); }
   .panel.active { display: block; animation: fadein 0.4s ease; }
   @keyframes fadein {
     from { opacity: 0; transform: translateY(14px); }
@@ -1419,6 +1421,7 @@
     <button class="tab-btn" onclick="switchTab('map')">Harita <span class="tab-icon" aria-hidden="true">🗺️</span></button>
     <button class="tab-btn" onclick="switchTab('wishlist')">İstek Listesi <span class="tab-icon" aria-hidden="true">🎁</span></button>
     <button class="tab-btn" onclick="switchTab('photos')">Resimler <span class="tab-icon" aria-hidden="true">📸</span></button>
+    <button class="tab-btn" onclick="switchTab('game')">Oyun <span class="tab-icon" aria-hidden="true">⛰️</span></button>
   </div>
 </div>
 
@@ -1684,6 +1687,12 @@
       </button>
     </div>
     <div class="photo-grid" id="photo-grid"></div>
+  </div>
+
+  <!-- GAME / OYUN (Belay — lives in /belay, loaded on first open) -->
+  <div class="panel" id="tab-game">
+    <p class="sec-label">İkimiz, bir dağ</p>
+    <iframe id="game-frame" class="game-frame" title="Belay"></iframe>
   </div>
 </div>
 
@@ -3067,7 +3076,7 @@ function deleteItem(ev, list, id) {
 }
 
 function switchTab(id) {
-  const tabIds = ['movies','tips','map','wishlist','photos'];
+  const tabIds = ['movies','tips','map','wishlist','photos','game'];
   document.querySelectorAll('.tab-btn').forEach((b, i) => {
     b.classList.toggle('active', tabIds[i] === id);
   });
@@ -3079,7 +3088,17 @@ function switchTab(id) {
   else if (id === 'wishlist') renderWishlist();
   else if (id === 'photos') renderPhotos();
   else if (id === 'map') { renderPlacesList(); setTimeout(initPlacesMap, 30); }
+  else if (id === 'game') {
+    const f = document.getElementById('game-frame');
+    if (!f.getAttribute('src')) f.src = 'belay/?embed';
+  }
 }
+
+/* The game reports its height so the tab grows with it instead of scrolling inside a box */
+window.addEventListener('message', e => {
+  if (e.origin !== location.origin || !e.data || typeof e.data.belayHeight !== 'number') return;
+  document.getElementById('game-frame').style.height = Math.max(480, e.data.belayHeight) + 'px';
+});
 
 const DEFAULT_DATA = {
   movies: [],

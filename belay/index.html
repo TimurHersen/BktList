@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Belay</title>
 <meta name="description" content="A quiz climb for two: rope up with a partner and race a rival team to the summit.">
+<script>/* ?embed = shown inside the BktList "Oyun" tab: use the itlist palette */
+if(new URLSearchParams(location.search).has("embed"))document.documentElement.setAttribute("data-embed","");</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
@@ -29,6 +31,15 @@
   --rope:#ff7444; --rope-soft:#3d2219; --rival:#6f9ee2; --rival-soft:#1b2a3d;
   --good:#58b884; --warn:#e0a83a; --bad:#ec6a62; color-scheme:dark}
 
+/* Embedded in itlist: match its deco-night palette, size to content */
+:root[data-embed]{
+  --paper:#100504; --panel:#190806; --ink:#F3D1A5; --muted:#B98768; --line:#3d1a10;
+  --rock:#260B07; --rock2:#1a0805; --snow:#4a2416; --sky:#0c0403;
+  --rope:#F18A3C; --rope-soft:#3a1708; --rival:#8fb3e8; --rival-soft:#16202e;
+  --good:#7cc79a; --warn:#e6b450; --bad:#ff6a55; color-scheme:dark}
+:root[data-embed],:root[data-embed] body{height:auto}
+:root[data-embed] .brand{display:none}
+:root[data-embed] .bar{border-bottom:0;padding-bottom:0}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{height:100%}
@@ -150,8 +161,8 @@ input:focus{border-color:var(--ink);outline:none}
 @media (max-width:880px){.lobby{grid-template-columns:1fr}}
 .hero h2{font-family:var(--display);font-size:44px;line-height:1;margin:8px 0 8px;letter-spacing:.01em;text-wrap:balance}
 .hero p{color:var(--muted);max-width:60ch;margin:0 0 12px}
-.cards{display:grid;gap:12px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;display:grid;gap:10px}
+.cards{display:grid;gap:12px;align-content:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;display:grid;gap:10px;align-content:start}
 .card h3{margin:0;font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:.03em;text-transform:uppercase}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
 .seg button{flex:1;min-width:90px;border:1.5px solid var(--line);border-radius:5px;padding:8px;background:var(--paper);cursor:pointer;text-align:left;font-size:13px}
@@ -661,7 +672,7 @@ function rememberTeam(code,name){
 }
 function readName(){const el=$("#myname");const v=((el?el.value:S.myName)||"").trim().slice(0,24);if(v){S.myName=v;LS.set("name",v);}return v;}
 function randCode(){const a="ABCDEFGHJKMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<6;i++)s+=a[Math.floor(Math.random()*a.length)];return s;}
-const inviteLink=code=>location.href.split("#")[0]+"#t-"+code;
+const inviteLink=code=>location.origin+location.pathname+"#t-"+code;
 let lobbyRival="twins";
 function renderLobby(invite){
   $("#teambar").innerHTML="";$("#homeBtn").hidden=true;
@@ -994,6 +1005,10 @@ function drawTopo(t){
 }
 
 /* ============================== BOOT ============================== */
+if(document.documentElement.hasAttribute("data-embed")&&window.parent!==window){
+  let lastH=0;const post=()=>{const h=Math.ceil(document.body.offsetHeight);if(Math.abs(h-lastH)>2){lastH=h;window.parent.postMessage({belayHeight:h},"*");}};
+  try{new ResizeObserver(post).observe(document.body);}catch(e){setInterval(post,1000);}
+}
 $("#homeBtn").onclick=goLobby;
 (function boot(){
   S.uid=LS.get("pid",null);
