@@ -8,7 +8,7 @@
 <script>/* ?embed = shown inside the BktList "Oyun" tab: use the itlist palette */
 if(new URLSearchParams(location.search).has("embed"))document.documentElement.setAttribute("data-embed","");</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Luckiest+Guy&display=swap">
 <style>
 /* Layout: guidebook topo — the mountain is the board (left), the pitch card is the play surface (right); stacks on phones. */
 :root{
@@ -37,6 +37,23 @@ if(new URLSearchParams(location.search).has("embed"))document.documentElement.se
   --rock:#260B07; --rock2:#1a0805; --snow:#4a2416; --sky:#0c0403;
   --rope:#F18A3C; --rope-soft:#3a1708; --rival:#8fb3e8; --rival-soft:#16202e;
   --good:#7cc79a; --warn:#e6b450; --bad:#ff6a55; color-scheme:dark}
+/* Cartoon scene palette: day (light), night (dark), ember night (embedded in BktList) */
+:root{--t-ink:#22150f;--t-cream:#fff3d6;--t-skin:#ffdcb5;--t-sky1:#b9ddd6;--t-sky2:#fbe8c4;--t-sun:#ffcf45;
+  --t-far:#a5bdb5;--t-rock:#cf9461;--t-rock-dk:#ad6f43;--t-snow:#fffaf0;--t-hill:#9cbf5b;--t-hill-dk:#7c9e3f;--t-pine:#3d6f45;
+  --t-cloud:#fffaf0;--t-tent:#e0472b;--t-mate:#f2b233;--t-me:var(--rope);--t-rival:var(--rival);--t-wood:#cf9150;
+  --t-rays:1;--t-stars:0;--t-grain:.4;--toon:"Luckiest Guy",var(--display)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --t-ink:#0c090b;--t-cream:#f4e6c8;--t-skin:#f1cfa8;--t-sky1:#121a33;--t-sky2:#3b2f55;--t-sun:#f2e6b3;
+  --t-far:#2b3452;--t-rock:#6e566a;--t-rock-dk:#544154;--t-snow:#d6dff0;--t-hill:#34523f;--t-hill-dk:#283f31;--t-pine:#173020;
+  --t-cloud:#8f8cad;--t-tent:#c9412a;--t-mate:#e0a52e;--t-wood:#9c6a3a;--t-rays:0;--t-stars:1;--t-grain:.3}}
+:root[data-theme="dark"]{
+  --t-ink:#0c090b;--t-cream:#f4e6c8;--t-skin:#f1cfa8;--t-sky1:#121a33;--t-sky2:#3b2f55;--t-sun:#f2e6b3;
+  --t-far:#2b3452;--t-rock:#6e566a;--t-rock-dk:#544154;--t-snow:#d6dff0;--t-hill:#34523f;--t-hill-dk:#283f31;--t-pine:#173020;
+  --t-cloud:#8f8cad;--t-tent:#c9412a;--t-mate:#e0a52e;--t-wood:#9c6a3a;--t-rays:0;--t-stars:1;--t-grain:.3}
+:root[data-embed]{
+  --t-ink:#0a0302;--t-cream:#F3D1A5;--t-skin:#f0c99c;--t-sky1:#130605;--t-sky2:#45190c;--t-sun:#F3D1A5;
+  --t-far:#2c100a;--t-rock:#63301e;--t-rock-dk:#4a2214;--t-snow:#e9c6a2;--t-hill:#3d2c12;--t-hill-dk:#2d200c;--t-pine:#1d1307;
+  --t-cloud:#6e3b29;--t-tent:#c9412a;--t-mate:#e6b450;--t-wood:#9c6a3a;--t-rays:0;--t-stars:1;--t-grain:.3}
 :root[data-embed],:root[data-embed] body{height:auto}
 :root[data-embed] .brand{display:none}
 :root[data-embed] .bar{border-bottom:0;padding-bottom:0}
@@ -49,10 +66,11 @@ button,input{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--rope);outline-offset:2px}
 .app{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:start}
 @media (max-width:880px){.app{grid-template-columns:1fr}}
+#main.app{width:100%}
 
 /* top bar */
 .bar{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;border-bottom:1px solid var(--line);padding-bottom:10px}
-.brand{font-family:var(--display);font-weight:700;font-size:30px;letter-spacing:.06em;line-height:1;margin:0;text-transform:uppercase}
+.brand{font-family:var(--toon);font-weight:400;font-size:30px;letter-spacing:.06em;line-height:1;margin:0;text-transform:uppercase}
 .brand b{color:var(--rope)}
 .bar .team{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0}
 .teamname{font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:.02em}
@@ -68,8 +86,10 @@ button,input{font:inherit;color:inherit}
 
 /* stage */
 .stage{position:relative;min-width:0}
-.topo{width:100%;height:auto;display:block;border:1px solid var(--line);background:var(--sky);border-radius:6px}
-.hud{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-top:10px}
+.scene{position:relative;container-type:inline-size;border:3px solid var(--t-ink);border-radius:14px;overflow:hidden;background:var(--t-sky2);box-shadow:0 5px 0 var(--t-ink)}
+.scene::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 58%,rgba(30,14,4,.42) 100%)}
+.topo{width:100%;height:auto;display:block;aspect-ratio:1000/620}
+.hud{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-top:14px}
 .hud div{background:var(--panel);padding:8px 10px;min-width:0}
 .hud .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .hud .v{font-family:var(--mono);font-size:16px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -79,30 +99,133 @@ button,input{font:inherit;color:inherit}
 .ropes i{width:14px;height:14px;border-radius:50%;border:2.5px solid var(--rope);display:inline-block}
 .ropes i.used{border-color:var(--line)}
 
-/* svg tokens */
-.m-far{fill:var(--rock2)} .m-near{fill:var(--rock)} .m-snow{fill:var(--snow)}
-.m-contour{fill:none;stroke:var(--line);stroke-width:1}
-.r-path{fill:none;stroke:var(--ink);stroke-width:2;opacity:.55}
-.r-path.alt{stroke-dasharray:3 6;opacity:.35}
-.r-done{fill:none;stroke:var(--rope);stroke-width:3.5;stroke-linecap:round}
-.r-rival{fill:none;stroke:var(--rival);stroke-width:1.6;stroke-dasharray:2 5;opacity:.8}
-.node{fill:var(--panel);stroke:var(--ink);stroke-width:1.4}
-.node.done{fill:var(--rope);stroke:var(--rope)}
-.node.cur{fill:var(--panel);stroke:var(--rope);stroke-width:3}
-.lbl{font-family:var(--mono);font-size:13px;fill:var(--muted)}
-.lbl.big{font-family:var(--display);font-size:20px;font-weight:600;fill:var(--ink);letter-spacing:.04em}
-.tent{fill:var(--ink)}
-.anchor{fill:none;stroke:var(--good);stroke-width:2.5}
-.rope-line{fill:none;stroke:var(--rope);stroke-width:2}
-.climber-me{fill:var(--rope);stroke:var(--panel);stroke-width:2}
-.rival-mk{fill:var(--rival);stroke:var(--panel);stroke-width:2}
-.flag{fill:var(--rope)}
-.pole{stroke:var(--ink);stroke-width:2}
+/* scene: ink outlines + flat fills (classes, so the theme tokens reach every shape) */
+.ik{stroke:var(--t-ink);stroke-linejoin:round;stroke-linecap:round;fill:none}
+.fi{fill:var(--t-ink)} .fc{fill:var(--t-cream)} .fw{fill:#fff} .fs{fill:var(--t-skin)} .fb{fill:#7a3b1c} .fn{fill:#ef8f73}
+.fcheek{fill:#f28b74;opacity:.55} .fsteel{fill:#c7ccd4} .fbed{fill:#6f8f4a}
+.fj{fill:var(--j)} .fh{fill:var(--h)} .fp{fill:var(--p)}
+.fsun{fill:var(--t-sun)} .ffar{fill:var(--t-far)} .frock{fill:var(--t-rock)} .frockdk{fill:var(--t-rock-dk)} .fsnow{fill:var(--t-snow)}
+.fhill{fill:var(--t-hill)} .fhilld{fill:var(--t-hill-dk)} .fpine{fill:var(--t-pine)} .fcl{fill:var(--t-cloud)}
+.ft{fill:var(--t-tent)} .fy{fill:var(--t-mate)} .fwood{fill:var(--t-wood)} .fme{fill:var(--t-me)} .fl1{fill:#ff7a1a} .fl2{fill:#ffd23a}
+.fsm{fill:var(--t-cloud);stroke:var(--t-ink);stroke-width:1.5}
+.tl{font-family:var(--toon);font-size:13px;fill:var(--t-cream);stroke:var(--t-ink);stroke-width:3.4px;paint-order:stroke;stroke-linejoin:round;letter-spacing:.04em}
+.tl.sm{font-size:9.5px;stroke-width:2.8px}
+.signt{font-family:var(--toon);font-size:11px;fill:var(--t-ink);letter-spacing:.03em}
+.pop{font-family:var(--toon);font-size:17px;fill:var(--t-mate);stroke:var(--t-ink);stroke-width:4px;paint-order:stroke;stroke-linejoin:round}
+.pop.bad{fill:#ff6b4f}
+.r-path{fill:none;stroke:var(--t-ink);stroke-width:3.4;stroke-linecap:round;stroke-dasharray:.1 10;opacity:.55}
+.r-path.alt{opacity:.2}
+.r-rival{fill:none;stroke:var(--t-rival);stroke-width:3.4;stroke-linecap:round;stroke-dasharray:.1 9;opacity:.75}
+.trail-o,.rope-o{fill:none;stroke:var(--t-ink);stroke-linecap:round;stroke-linejoin:round}
+.trail,.rope-i{fill:none;stroke:var(--t-me);stroke-linecap:round;stroke-linejoin:round}
+.trail-o{stroke-width:7}.trail{stroke-width:3.6}.rope-o{stroke-width:4.6}.rope-i{stroke-width:2.2}
+
+/* scenery loops */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes sway{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+@keyframes drift{to{transform:translateX(var(--dx))}}
+@keyframes twinkle{to{transform:scale(.35)}}
+@keyframes flick{from{transform:scale(1,1) skewX(-5deg)}to{transform:scale(.86,1.18) skewX(6deg)}}
+@keyframes puff{0%{transform:translate(0,8px) scale(.4);opacity:.85}100%{transform:translate(9px,-30px) scale(1.6);opacity:0}}
+@keyframes glow{to{opacity:.15}}
+@keyframes frame2{0%{opacity:1}50%{opacity:0}}
+@keyframes pulse{0%,100%{transform:scale(.8);opacity:1}50%{transform:scale(1.35);opacity:.35}}
+@keyframes spring{from{transform:scale(0) rotate(-20deg)}}
+.rays{opacity:var(--t-rays);animation:spin 26s linear infinite}
+.sunface{animation:t-tilt 2.2s ease-in-out infinite alternate}
+.nstars{opacity:var(--t-stars)}
+.tw{transform-box:fill-box;transform-origin:center;animation:twinkle 1.4s steps(2) infinite alternate}
+.cloud{animation:drift linear infinite}
+.cloud .cf,.pine{transform-box:fill-box;transform-origin:50% 100%;animation:sway 2.6s ease-in-out infinite alternate}
+.cloud .cf{transform-origin:50% 50%;animation-duration:1.3s}
+.fire .glow,.fire .smoke,.fire .flame{display:none}
+.fire.lit .glow,.fire.lit .smoke,.fire.lit .flame{display:inline}
+.glow{fill:var(--t-sun);opacity:.38;animation:glow .45s ease-in-out infinite alternate}
+.fla{transform-box:fill-box;transform-origin:50% 100%;animation:flick .2s steps(2) infinite alternate}
+.smoke circle{transform-box:fill-box;transform-origin:center;opacity:0;animation:puff 2.4s ease-out infinite}
+.smoke circle:nth-child(2){animation-delay:-.8s}.smoke circle:nth-child(3){animation-delay:-1.6s}
+.ignite .flame{transform-box:fill-box;transform-origin:50% 100%;animation:spring .6s 1.3s cubic-bezier(.2,1.8,.4,1) both}
+.flagA{animation:frame2 .5s steps(1) infinite}.flagB{animation:frame2 .5s steps(1) -.25s infinite}
+.target{transform-box:fill-box;transform-origin:center;animation:pulse 1s ease-in-out infinite}
+.sign{transform-box:fill-box;transform-origin:50% 100%;animation:spring .6s cubic-bezier(.2,1.8,.4,1) both}
+
+/* rubber-hose climbers: joints rotate around their own hinge (local user units) */
+.toon .rig{transform-origin:0 0}
+.toon .armB{transform-origin:-4px -26px}.toon .armF{transform-origin:5px -26px}
+.toon .legB{transform-origin:-3px -14px}.toon .legF{transform-origin:3px -14px}
+.toon .head{transform-origin:1px -28px}.toon .eyes{transform-origin:6.5px -37px;animation:t-blink 3.8s infinite}
+.toon.b .eyes{animation-delay:-1.7s}
+.toon .mouthO{display:none}
+.toon .rig,.toon .armF,.toon .armB,.toon .legF,.toon .legB{transition:transform .15s}
+@keyframes t-blink{0%,92%,100%{transform:none}95%{transform:scaleY(.1)}}
+@keyframes t-bob{from{transform:scale(1.03,.96)}to{transform:scale(.98,1.03)}}
+@keyframes t-sw{from{transform:rotate(-12deg)}to{transform:rotate(14deg)}}
+@keyframes t-tilt{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+@keyframes t-climb{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-3px) rotate(3deg)}}
+@keyframes t-reachF{0%,100%{transform:rotate(-135deg)}50%{transform:rotate(-55deg)}}
+@keyframes t-reachB{0%,100%{transform:rotate(-95deg)}50%{transform:rotate(-180deg)}}
+@keyframes t-stepF{0%,100%{transform:rotate(-40deg)}50%{transform:rotate(12deg)}}
+@keyframes t-stepB{0%,100%{transform:rotate(8deg)}50%{transform:rotate(-45deg)}}
+@keyframes t-jump{0%,100%{transform:scale(1.18,.82)}30%{transform:translateY(-15px) scale(.9,1.12)}60%{transform:translateY(-6px)}}
+@keyframes t-yayF{from{transform:rotate(-160deg)}to{transform:rotate(-125deg)}}
+@keyframes t-yayB{from{transform:rotate(-205deg)}to{transform:rotate(-170deg)}}
+@keyframes t-kick{from{transform:rotate(-25deg)}to{transform:rotate(15deg)}}
+@keyframes t-flF{from{transform:rotate(-175deg)}to{transform:rotate(-115deg)}}
+@keyframes t-flB{from{transform:rotate(-220deg)}to{transform:rotate(-160deg)}}
+@keyframes t-flL{from{transform:rotate(-45deg)}to{transform:rotate(35deg)}}
+.idle .rig{animation:t-bob .85s ease-in-out infinite alternate}
+.toon.b.idle .rig{animation-delay:-.4s}
+.idle .armF{animation:t-sw 1.7s ease-in-out infinite alternate}
+.idle .armB{animation:t-sw 1.7s ease-in-out -.85s infinite alternate}
+.idle .head{animation:t-tilt 1.7s ease-in-out infinite alternate}
+.climb .rig{animation:t-climb .3s ease-in-out infinite alternate}
+.climb .armF{animation:t-reachF .6s ease-in-out infinite}.climb .armB{animation:t-reachB .6s ease-in-out infinite}
+.climb .legF{animation:t-stepF .6s ease-in-out infinite}.climb .legB{animation:t-stepB .6s ease-in-out infinite}
+.climb .head{transform:rotate(-8deg)}
+.cheer .rig{animation:t-jump .56s cubic-bezier(.3,.1,.4,1) infinite}
+.cheer .armF{animation:t-yayF .28s ease-in-out infinite alternate}.cheer .armB{animation:t-yayB .28s ease-in-out -.14s infinite alternate}
+.cheer .legF{animation:t-kick .28s ease-in-out infinite alternate}.cheer .legB{animation:t-kick .28s ease-in-out -.14s infinite alternate}
+.cheer .mouth,.fall .mouth{display:none}.cheer .mouthO,.fall .mouthO{display:inline}
+.fall .armF{animation:t-flF .14s linear infinite alternate}.fall .armB{animation:t-flB .14s linear -.07s infinite alternate}
+.fall .legF{animation:t-flL .16s linear infinite alternate}.fall .legB{animation:t-flL .16s linear -.08s infinite alternate}
+.fall .eyes{animation:none;transform:scale(1.25)}
+.brace .rig{transform:rotate(-14deg)}.brace .armF{transform:rotate(-60deg)}.brace .armB{transform:rotate(-100deg)}.brace .legF{transform:rotate(-30deg)}
+.dizzy .rig{transform:scale(1.08,.9)}.dizzy .head{animation:t-tilt .45s ease-in-out infinite alternate}
+.dizzy .eyes{animation:none;transform:scaleY(.35)}
+.dizzy .armF,.dizzy .armB{animation:t-sw .45s ease-in-out infinite alternate}
+.hop .rig{animation:t-jump .6s cubic-bezier(.3,.1,.4,1) 1}.hop .armF{transform:rotate(-80deg)}.hop .armB{transform:rotate(-130deg)}
+
+/* old-film overlay + title cards */
+.film{position:absolute;inset:0;pointer-events:none;opacity:var(--t-grain);animation:grain .6s steps(3) infinite;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .12 0 0 0 0 .05 1.6 0 0 0 -.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.film::after{content:"";position:absolute;top:0;bottom:0;left:30%;width:1.5px;background:rgba(40,20,5,.7);opacity:0;animation:scratch 2.7s steps(1) infinite}
+@keyframes grain{0%{background-position:0 0}33%{background-position:-60px 40px}66%{background-position:50px -70px}}
+@keyframes scratch{0%{left:22%;opacity:.8}8%{opacity:0}35%{left:71%;opacity:.6}41%{opacity:0}70%{left:48%;opacity:.7}75%{opacity:0}}
+.fx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.tcard{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  --c1:var(--t-mate);--c2:var(--t-me);animation:tc-out .4s ease-in 2s forwards}
+.tcard.bad{--c1:#ee6a4f;--c2:#8c2a1d}.tcard.good{--c1:#a6d36d;--c2:#3f8f5a}
+.tcard .burst{position:absolute;left:50%;top:50%;width:min(60%,380px);transform:translate(-50%,-50%);animation:tc-burst .45s cubic-bezier(.2,1.6,.4,1) both}
+.tcard .burst g{animation:spin 7s linear infinite}
+.tcard .burst path{fill:var(--c1);stroke:var(--t-ink);stroke-width:3.5;stroke-linejoin:round}
+.tcard .burst circle{fill:var(--c2);stroke:var(--t-ink);stroke-width:3}
+.tcard b{position:relative;font:400 48px/1 var(--toon);color:var(--t-cream);-webkit-text-stroke:.09em var(--t-ink);paint-order:stroke fill;
+  text-shadow:.05em .07em 0 var(--t-ink);letter-spacing:.02em;white-space:nowrap}
+.tcard b span{display:inline-block;transform:translateY(var(--y)) rotate(var(--r));animation:tc-letter .55s cubic-bezier(.2,1.7,.45,1) both;animation-delay:calc(var(--i)*50ms)}
+.tcard small{position:relative;margin-top:.5em;font:400 18px/1 var(--toon);font-size:min(3.2cqw,22px);letter-spacing:.04em;color:var(--t-ink);background:var(--t-cream);
+  border:3px solid var(--t-ink);border-radius:999px;padding:.4em .9em .2em;transform:rotate(-3deg);animation:tc-letter .5s .35s cubic-bezier(.2,1.7,.45,1) both}
+@keyframes tc-letter{from{transform:translateY(-1.2em) scale(.2) rotate(-25deg);opacity:0}}
+@keyframes tc-burst{from{transform:translate(-50%,-50%) scale(0)}}
+@keyframes tc-out{to{opacity:0;transform:scale(1.15)}}
+.conf{position:absolute;left:var(--x);top:-8%;width:9px;height:13px;background:var(--c);border:2px solid var(--t-ink);border-radius:2px;
+  animation:conf var(--dur) cubic-bezier(.25,.5,.6,1) var(--d) both}
+@keyframes conf{from{top:-8%;transform:none}to{top:108%;transform:translateX(var(--dr)) rotate(var(--rot))}}
+@media (prefers-reduced-motion:reduce){.scene *,.scene *::after{animation:none!important;transition:none!important}}
 
 /* panel */
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px;min-width:0}
 .eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.terrain{font-family:var(--display);font-weight:700;font-size:40px;line-height:1;letter-spacing:.03em;text-transform:uppercase;margin:6px 0 2px}
+.terrain{font-family:var(--toon);font-weight:400;font-size:38px;line-height:1;letter-spacing:.04em;text-transform:uppercase;margin:8px 0 4px}
 .rule{color:var(--muted);font-size:14px;margin:0 0 14px;max-width:62ch}
 .role{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:2px 7px;border-radius:3px}
 .role.lead{background:var(--rope);color:var(--panel)}
@@ -134,7 +257,10 @@ input:focus{border-color:var(--ink);outline:none}
 .err{color:var(--bad);font-size:13px;margin-top:6px;min-height:1em}
 
 /* reveal */
-.headline{font-family:var(--display);font-weight:700;font-size:34px;line-height:1.05;letter-spacing:.02em;margin:6px 0 10px;text-wrap:balance}
+.headline{font-family:var(--toon);font-weight:400;font-size:30px;line-height:1.05;letter-spacing:.03em;margin:6px 0 10px;text-wrap:balance;
+  transform-origin:left center;animation:hl-pop .5s cubic-bezier(.2,1.7,.45,1) both}
+@keyframes hl-pop{from{transform:scale(.6) rotate(-3deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.headline{animation:none}}
 .headline.good{color:var(--good)} .headline.bad{color:var(--bad)} .headline.warn{color:var(--warn)}
 .lines{display:grid;gap:6px;margin:10px 0 14px}
 .line{display:grid;grid-template-columns:90px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line)}
@@ -682,7 +808,7 @@ function renderLobby(invite){
     <div class="hero"><div class="eyebrow">A quiz climb for two</div>
     <h2>Rope up, answer together, reach the summit.</h2>
     <p>You and your partner climb one mountain, pitch by pitch. Each pitch is a different kind of question. Your rope team, your altitude and your record are saved, so you can stop at camp and carry on another night.</p></div>
-    <svg class="topo" id="topo" viewBox="0 0 1000 620" role="img" aria-label="Topo of the mountain route"></svg>
+    ${sceneHtml("Cartoon mountain with the route from base camp to the summit")}
     <div class="terrains" style="margin-top:14px">${Object.values(TERRAIN).map(x=>`<div><b>${x.name}</b>${esc(x.rule)}</div>`).join("")}</div>
   </div>
   <div class="cards">
@@ -795,7 +921,7 @@ function render(){
   const t=S.team;if(!t)return;renderBar();
   const main=$("#main");
   if(!main.querySelector(".stage.game")){main.className="app";main.style.gridColumn="1/-1";
-    main.innerHTML=`<div class="stage game"><svg class="topo" id="topo" viewBox="0 0 1000 620" role="img" aria-label="Your route on the mountain"></svg><div class="hud" id="hud"></div></div><div class="panel" id="panel"></div>`;}
+    main.innerHTML=`<div class="stage game">${sceneHtml("Your rope team on the mountain")}<div class="hud" id="hud"></div></div><div class="panel" id="panel"></div>`;}
   drawTopo(t);renderHud(t);renderPanel(t);
 }
 function renderHud(t){
@@ -974,34 +1100,282 @@ function posXY(exp,p){const L=lens(exp);
   if(L[2]){const k=exp.choice[1];return quad(PTS.C2,CTRL[k+"1"],PTS.S,(p-L[0]-L[1])/L[2]);}
   return PTS.C2;}
 const RIV={p0:[945,Y(1800)],c:[880,330],p1:PTS.S};
-function drawTopo(t){
-  const svg=$("#topo");if(!svg)return;const exp=t?t.exp:null;
-  const ridge="0,600 0,500 90,470 170,430 230,445 300,360 360,330 420,300 470,250 520,215 560,190 610,150 660,120 700,92 720,80 745,100 790,140 830,175 860,170 900,210 950,260 1000,300 1000,600";
-  let s=`<polygon class="m-far" points="0,600 0,380 110,330 210,360 330,260 420,300 520,230 600,260 700,180 830,240 920,200 1000,240 1000,600"/>
-   <polygon class="m-near" points="${ridge}"/>
-   <polygon class="m-snow" points="610,150 660,120 700,92 720,80 745,100 790,140 770,150 742,132 712,158 682,146 650,170 625,166"/>`;
-  for(const a of [2000,2400,2800,3200,3600,4000]){const y=Y(a);s+=`<line class="m-contour" x1="0" x2="1000" y1="${y}" y2="${y}" stroke-dasharray="1 7"/><text class="lbl" x="992" y="${y-4}" text-anchor="end">${fmt(a)}</text>`;}
-  s+=`<path class="r-rival" d="${qpath(RIV.p0,RIV.c,RIV.p1)}"/>`;
-  for(const d of segDefs(exp)){s+=`<path class="r-path ${d.alt||(!d.chosen&&d.key!=="s0")?"alt":""}" d="${qpath(d.p0,d.c,d.p1)}"/>`;}
-  if(exp){const done=[];for(let i=0;i<=exp.pitch;i++)done.push(posXY(exp,i));
-    if(done.length>1)s+=`<polyline class="r-done" points="${done.map(p=>p.join(",")).join(" ")}"/>`;
-    const tot=total(exp);const stops=campStops(exp);
-    for(let i=1;i<tot;i++){if(stops.includes(i))continue;const [x,y]=posXY(exp,i);s+=`<circle class="node ${i<exp.pitch?"done":""}" cx="${x}" cy="${y}" r="5"/>`;}
-    if(exp.pitch<tot&&needsChoice(exp)<0){const [x,y]=posXY(exp,exp.pitch+1>tot?tot:exp.pitch+1);const ter=route(exp)[exp.pitch];
-      if(ter){s+=`<circle class="node cur" cx="${x}" cy="${y}" r="8"/><text class="lbl big" x="${x+14}" y="${y+6}">P${exp.pitch+1} ${TERRAIN[ter].name}</text>`;}}
-  }else{for(const d of segDefs(null)){for(let i=1;i<d.n;i++){const [x,y]=quad(d.p0,d.c,d.p1,i/d.n);s+=`<circle class="node" cx="${x}" cy="${y}" r="4"/>`;}}}
-  const tent=([x,y],label,alt)=>`<polygon class="tent" points="${x-11},${y+2} ${x},${y-15} ${x+11},${y+2}"/><text class="lbl" x="${x-16}" y="${y+4}" text-anchor="end">${label} ${fmt(alt)} m</text>`;
-  s+=tent(PTS.C1,"Camp I",ALT.c1)+tent(PTS.C2,"Camp II",ALT.c2);
-  s+=`<text class="lbl" x="${PTS.B[0]-8}" y="${PTS.B[1]+26}">Base ${fmt(ALT.base)} m</text>`;
-  s+=`<line class="pole" x1="${PTS.S[0]}" y1="${PTS.S[1]}" x2="${PTS.S[0]}" y2="${PTS.S[1]-34}"/><polygon class="flag" points="${PTS.S[0]},${PTS.S[1]-34} ${PTS.S[0]+22},${PTS.S[1]-28} ${PTS.S[0]},${PTS.S[1]-22}"/><text class="lbl big" x="${PTS.S[0]-14}" y="${PTS.S[1]-14}" text-anchor="end">${fmt(ALT.top)} m</text>`;
+/* ============================== SCENE ============================== */
+/* Rubber-hose cartoon layer on the topo geometry above: a painted backdrop built once per <svg>,
+   route props rebuilt when the route changes, and climbers driven by one rAF loop with a follow camera.
+   Event animations (climb, fall, camp arrival) play off round.result, so both partners see the same show. */
+const NS="http://www.w3.org/2000/svg",SC=.8;
+const RM=matchMedia("(prefers-reduced-motion: reduce)");
+const FX={svg:null,raf:0,last:0,ch:{main:0,rival:0},tw:[],A:null,R:null,exp:null,mode:"",state:null,
+  routeKey:"",lit:new Set(),cam:null,focus:"me",camW:600,trailP:-1,sag:9};
+const DEMO={choice:["A","A"]};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const ease=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+const easeBack=k=>1+3.2*Math.pow(k-1,3)+2.2*Math.pow(k-1,2);
+const f1=n=>n.toFixed(1);
+/* tweens run inside the rAF loop; a channel's tweens are dropped when a newer sequence starts on it */
+function play(ms,fn,ch="main"){if(RM.matches)ms=0;return new Promise(res=>FX.tw.push({t0:performance.now(),ms,fn,res,ch,id:ch?FX.ch[ch]:0}));}
+const wait=(ms,ch)=>play(ms,()=>{},ch);
+function svgEl(tag,cls,html){const e=document.createElementNS(NS,tag);if(cls)e.setAttribute("class",cls);if(html)e.innerHTML=html;return e;}
+const sceneHtml=label=>`<div class="scene"><svg class="topo" id="topo" viewBox="0 0 1000 620" role="img" aria-label="${esc(label)}"></svg><div class="film" aria-hidden="true"></div><div class="fx" id="fx" aria-hidden="true"></div></div>`;
+
+/* ---------- characters ---------- */
+const TOONS={me:{j:"var(--t-me)",h:"#2f8f8a"},mate:{j:"var(--t-mate)",h:"#c8382a"},
+  tourists:{j:"var(--t-rival)",h:"#ecc978",hat:"sun",cam:1,p:"#55647e"},
+  twins:{j:"var(--t-rival)",h:"#e8b021",p:"#55647e",twins:1},
+  soloist:{j:"var(--t-rival)",h:"#e0472b",hat:"band",nopack:1}};
+function toon(o,b){ // feet at 0,0, facing right
+  const hat=o.hat==="sun"?`<path class="ik fh" stroke-width="2.2" d="M-17,-47 Q1,-53 19,-47 Q1,-42 -17,-47Z"/><path class="ik fh" stroke-width="2.2" d="M-8,-48 Q1,-62 10,-48Z"/><path class="ik" stroke-width="2.6" style="stroke:#c8382a" d="M-7.5,-49.5 Q1,-52 9.5,-49.5"/>`
+    :o.hat==="band"?`<path class="ik" stroke-width="3.4" style="stroke:var(--h)" d="M-10,-45 Q-17,-44 -21,-38 M-10,-45 Q-16,-41 -17,-34"/><path class="ik fh" stroke-width="2" d="M-11,-47 Q1,-51 13,-47 L13,-43 Q1,-47 -11,-43Z"/>`
+    :`<path class="ik fh" stroke-width="2.2" d="M-10.5,-45 Q1,-64 12.5,-45Z"/><rect class="ik fc" stroke-width="2" x="-11.5" y="-48" width="25" height="5.5" rx="2.7"/><circle class="ik fc" stroke-width="2" cx="1" cy="-57" r="3.8"/>`;
+  const pack=o.nopack?"":`<rect class="ik fp" stroke-width="2.2" x="-15" y="-31" width="10" height="16" rx="3.5"/><rect class="ik fbed" stroke-width="1.8" x="-16" y="-35" width="12" height="5.5" rx="2.7"/>`;
+  return `<g class="toon idle${b?" b":""}" style="--j:${o.j};--h:${o.h};--p:${o.p||"#7b5434"}"><g class="rig">
+   <g class="armB"><path class="ik" stroke-width="3.2" d="M-4,-26 C-8,-23 -10,-20 -11,-16"/><circle class="ik fw" stroke-width="1.8" cx="-11.5" cy="-14" r="3.6"/></g>
+   <g class="legB"><path class="ik" stroke-width="3.6" d="M-3,-14 C-3,-9 -5,-6 -5,-2"/><path class="ik fb" stroke-width="1.8" d="M-10,0 Q-10,-5 -5,-4.5 Q0,-5 1,0Z"/></g>
+   ${pack}
+   <g class="legF"><path class="ik" stroke-width="3.6" d="M3,-14 C3,-9 5,-6 5,-2"/><path class="ik fb" stroke-width="1.8" d="M0,0 Q0,-5 5,-4.5 Q10,-5 11,0Z"/></g>
+   <path class="ik fj" stroke-width="2.4" d="M-8,-13 C-10,-24 -6,-31 1,-31 C8,-31 11,-24 8,-13 Q0,-10 -8,-13Z"/>
+   <path class="ik" stroke-width="1.6" d="M-8.6,-17 Q0,-13.5 8.6,-17"/><circle class="ik fsteel" stroke-width="1.2" cx="1" cy="-15" r="1.9"/>
+   ${o.cam?`<rect class="fi" x="2" y="-27" width="8" height="6" rx="1.5"/><circle cx="6" cy="-24" r="1.7" style="fill:#9fd0f0"/>`:""}
+   <g class="head"><circle class="ik fs" stroke-width="2.4" cx="1" cy="-38" r="11"/><circle class="fcheek" cx="-1" cy="-32" r="2.6"/>
+    <g class="eyes"><ellipse class="fi" cx="3.5" cy="-37" rx="2.3" ry="3.6"/><ellipse class="fi" cx="9.5" cy="-37" rx="2.3" ry="3.6"/><path class="fw" d="M3.9,-39.6 l1.5,-1.3 l.5,1.9Z M9.9,-39.6 l1.5,-1.3 l.5,1.9Z"/></g>
+    <ellipse class="ik fn" stroke-width="1.5" cx="13.5" cy="-33" rx="2.9" ry="2.3"/>
+    <path class="ik mouth" stroke-width="1.8" d="M4.5,-29.5 Q9,-26 13,-30"/><ellipse class="fi mouthO" cx="9" cy="-28.5" rx="2" ry="2.7"/>
+    ${hat}</g>
+   <g class="armF"><path class="ik" stroke-width="3.2" d="M5,-26 C9,-23 11,-20 12,-16"/><circle class="ik fw" stroke-width="1.8" cx="12.5" cy="-14" r="3.6"/></g>
+  </g></g>`;
+}
+function makeActor(o){
+  const el=svgEl("g","actor",o.twins?`<g transform="translate(-9,1) scale(.82)">${toon(o)}</g><g transform="translate(9,3) scale(.82)">${toon(o,1)}</g>`:toon(o));
+  return {el,toons:[...el.querySelectorAll(".toon")],p:0,alt:ALT.base,dx:0,dy:0,rot:0,face:1,x:0,y:0,state:"idle",
+    set(s){if(s===this.state)return;this.state=s;for(const t of this.toons)t.setAttribute("class",`toon ${s}${t.classList.contains("b")?" b":""}`);}};
+}
+function place(a,x,y,face){a.x=x+a.dx;a.y=y+a.dy;a.face=face;const c=18*SC;
+  a.el.setAttribute("transform",`translate(${f1(a.x)},${f1(a.y-c)}) rotate(${f1(a.rot)}) translate(0,${f1(c)}) scale(${face*SC},${SC})`);}
+
+/* ---------- painted backdrop (built once per svg) ---------- */
+const RIDGE="0,600 0,500 90,470 170,430 230,445 300,360 360,330 420,300 470,250 520,215 560,190 610,150 660,120 700,92 720,80 745,100 790,140 830,175 860,170 900,210 950,260 1000,300 1000,600";
+function bgSVG(){
+  const cloud="M-50,10 C-66,10 -66,-12 -48,-12 C-48,-32 -18,-36 -10,-20 C-4,-42 34,-40 36,-16 C56,-20 64,4 48,10 Z";
+  const clouds=[[62,.9,110,.15],[150,.7,140,.55],[36,1.1,95,.8],[215,.6,160,.35]].map(([y,s,d,f])=>
+    `<g transform="translate(1150,${y}) scale(${s})"><g class="cloud" style="--dx:${Math.round(-1500/s)}px;animation-duration:${d}s;animation-delay:-${f1(d*f)}s"><path class="ik fcl" stroke-width="3.5" d="${cloud}"/><g class="cf"><ellipse class="fi" cx="-6" cy="-8" rx="2.4" ry="3.6"/><ellipse class="fi" cx="8" cy="-8" rx="2.4" ry="3.6"/><path class="ik" stroke-width="2.4" d="M-5,0 Q1,6 7,0"/></g></g></g>`).join("");
+  const stars=[[60,40],[210,70],[330,28],[460,92],[560,40],[690,30],[820,80],[930,42],[880,150],[260,160],[400,190],[40,200],[610,120]].map(([x,y],i)=>
+    `<path class="tw fc" style="animation-delay:-${(i*.37)%1.4}s" d="M${x},${y-5} L${x+1.5},${y-1.5} L${x+5},${y} L${x+1.5},${y+1.5} L${x},${y+5} L${x-1.5},${y+1.5} L${x-5},${y} L${x-1.5},${y-1.5}Z"/>`).join("");
+  const pines=[[18,592,.9],[130,594,1],[178,598,.75],[300,600,.9],[420,590,1.05],[455,596,.7],[600,604,.85],[760,588,1],[800,592,.7],[1000,592,.9]].map(([x,y,s],i)=>
+    `<g transform="translate(${x},${y}) scale(${s})"><g class="pine" style="animation-delay:-${f1(i*.37)}s"><path class="ik" stroke-width="4" d="M0,0 V-8"/><path class="ik fpine" stroke-width="2.8" d="M-14,-6 L0,-30 L14,-6Z"/><path class="ik fpine" stroke-width="2.8" d="M-10,-20 L0,-42 L10,-20Z"/></g></g>`).join("");
+  return `<g class="nstars">${stars}</g>
+   <g transform="translate(120,92)"><g class="rays">${Array.from({length:12},(_,i)=>`<path class="ik fsun" stroke-width="3" d="M-7,-54 L0,-74 L7,-54Z" transform="rotate(${i*30})"/>`).join("")}</g>
+    <circle class="ik fsun" stroke-width="4.5" r="44"/>
+    <g class="sunface"><ellipse class="fi" cx="-14" cy="-8" rx="5" ry="8.5"/><ellipse class="fi" cx="14" cy="-8" rx="5" ry="8.5"/><path class="fw" d="M-13,-13.5 l3,-2.4 l.8,3.6Z M15,-13.5 l3,-2.4 l.8,3.6Z"/><circle class="fcheek" cx="-25" cy="8" r="6"/><circle class="fcheek" cx="25" cy="8" r="6"/><path class="ik" stroke-width="4" d="M-17,10 Q0,28 17,10"/></g></g>
+   ${clouds}
+   <polygon class="ik ffar" stroke-width="3.5" points="0,600 0,380 110,330 210,360 330,260 420,300 520,230 600,260 700,180 830,240 920,200 1000,240 1000,600"/>
+   <path class="ik fsnow" stroke-width="2.5" d="M308,278 L330,260 L346,267 L338,274 L329,268 L318,281Z M682,194 L700,180 L723,191 L712,197 L702,190 L691,200Z M904,207 L920,200 L934,207 L926,211 L919,206 L911,212Z"/>
+   <polygon class="frock" points="${RIDGE}"/>
+   <polygon class="frockdk" points="720,82 745,100 790,140 830,175 860,170 900,210 950,260 997,300 997,600 770,600 752,430 742,250"/>
+   <path class="ik" stroke-width="3" d="M190,470 q18,-8 26,-26 M318,420 q12,-14 30,-18 M470,320 q14,-10 18,-28 M540,520 q26,-8 34,-36 M260,540 q10,-12 28,-14 M840,320 q-8,18 2,38 M900,430 q-14,14 -8,38 M640,420 q10,-10 26,-12"/>
+   <path class="ik" stroke-width="3" style="stroke:var(--t-cream);opacity:.45" d="M130,470 q20,-14 40,-18 M380,330 q16,-12 34,-14 M560,230 q12,-10 26,-12"/>
+   <polygon class="ik" stroke-width="5" points="${RIDGE}"/>
+   <polygon class="ik fsnow" stroke-width="4" points="610,150 660,120 700,92 720,80 745,100 790,140 770,150 742,132 712,158 682,146 650,170 625,166"/>
+   <path class="ik fhill" stroke-width="4.5" d="M-10,630 L-10,588 Q70,566 150,590 Q240,612 330,590 Q430,566 520,592 Q610,612 700,590 Q800,568 880,592 Q950,606 1010,584 L1010,630Z"/>
+   <path class="fhilld" d="M-10,630 L-10,612 Q120,600 260,613 Q400,622 540,609 Q700,598 840,612 Q930,620 1010,607 L1010,630Z"/>
+   ${pines}`;
+}
+
+/* ---------- route props (rebuilt when the route changes) ---------- */
+const TENT=`<path class="ik" stroke-width="1.8" d="M-22,0 L-30,3 M22,0 L30,3"/><path class="ik ft" stroke-width="3" d="M-22,0 L0,-32 L22,0Z"/><path class="ik fy" stroke-width="2.2" d="M0,-32 L-9,0 L9,0Z"/><path class="fi" d="M0,-23 L-5,0 L5,0Z"/><path class="ik" stroke-width="2.6" d="M0,-32 V-41"/><path class="ik fc" stroke-width="1.6" d="M0,-41 L10,-38 L0,-35Z"/>`;
+const FIRE=`<ellipse class="glow" cx="0" cy="-8" rx="17" ry="13"/>
+ <g class="smoke"><circle class="fsm" cx="0" cy="-26" r="4"/><circle class="fsm" cx="0" cy="-26" r="4"/><circle class="fsm" cx="0" cy="-26" r="4"/></g>
+ <g class="flame"><g class="fla"><path class="ik fl1" stroke-width="2.2" d="M0,-1 C-9,-3 -8,-14 -2,-21 C-1,-15 3,-17 2,-26 C10,-17 10,-5 0,-1Z"/><path class="fl2" d="M0,-4 C-4,-5 -3,-10 0,-14 C1,-10 4,-10 0,-4Z"/></g></g>
+ <rect class="ik fwood" stroke-width="2" x="-11" y="-4" width="22" height="5.5" rx="2.7" transform="rotate(13)"/><rect class="ik fwood" stroke-width="2" x="-11" y="-4" width="22" height="5.5" rx="2.7" transform="rotate(-13)"/>`;
+function campSVG([x,y],label,alt,lit,ign){
+  return `<g transform="translate(${x-56},${y+4})">${TENT}</g>
+   <g transform="translate(${x+28},${y+5})"><g class="fire${lit?" lit":""}${ign?" ignite":""}">${FIRE}</g></g>
+   <text class="tl" x="${x-56}" y="${y+23}" text-anchor="middle">${label.toUpperCase()}</text><text class="tl sm" x="${x-56}" y="${y+34}" text-anchor="middle">${fmt(alt)} M</text>`;}
+function signSVG(x,y,label){label=label.toUpperCase();const w=Math.round(label.length*7.6+16),left=x+w>985,rx=left?-w+8:-8,at=`translate(${f1(x)},${f1(y)})`;
+  return `<g transform="${at}"><g class="target"><circle class="ik" stroke-width="3" r="9" style="stroke:var(--t-me)"/></g></g>
+   <g transform="${at}"><g class="sign"><path class="ik" stroke-width="3.2" d="M0,-8 V-34"/><g transform="rotate(${left?3:-3})"><rect class="ik fwood" stroke-width="2.4" x="${rx}" y="-54" width="${w}" height="21" rx="5"/><text class="signt" x="${rx+w/2}" y="-39" text-anchor="middle">${esc(label)}</text></g></g></g>`;}
+function buildRoute(exp){
+  const key=exp?JSON.stringify([exp.n,exp.choice,exp.pitch,exp.anchor]):"lobby";
+  if(key===FX.routeKey)return;const first=!FX.routeKey;FX.routeKey=key;
+  let s="";
+  for(const a of [2000,2400,2800,3200,3600,4000]){const y=Y(a);s+=`<path class="ik" stroke-width="2.5" d="M976,${y} H1004"/><text class="tl sm" x="970" y="${y+3.5}" text-anchor="end">${fmt(a)}</text>`;}
+  if(exp)s+=`<path class="r-rival" d="${qpath(RIV.p0,RIV.c,RIV.p1)}"/>`;
+  for(const d of segDefs(exp))s+=`<path class="r-path ${d.alt||(!d.chosen&&d.key!=="s0")?"alt":""}" d="${qpath(d.p0,d.c,d.p1)}"/>`;
+  const piton=([x,y],done)=>`<circle class="ik ${done?"fme":"fc"}" stroke-width="2.2" cx="${f1(x)}" cy="${f1(y)}" r="4.5"/>`;
+  if(exp){const tot=total(exp),stops=campStops(exp);for(let i=1;i<tot;i++)if(!stops.includes(i))s+=piton(posXY(exp,i),i<=exp.pitch);}
+  else for(const d of segDefs(null))for(let i=1;i<d.n;i++)s+=piton(quad(d.p0,d.c,d.p1,i/d.n),false);
+  const L=exp?lens(exp):null,reached=exp?Math.max(exp.pitch,exp.anchor):0;
+  const lit={c1:!exp||reached>=L[0],c2:!exp||!!(L[1]&&reached>=L[0]+L[1])};
+  const [bx,by]=PTS.B;
+  s+=`<g transform="translate(${bx-44},${by+2}) scale(1.15)">${TENT}</g><text class="tl" x="${bx-70}" y="${by+22}">BASE CAMP</text><text class="tl sm" x="${bx-70}" y="${by+33}">${fmt(ALT.base)} M</text>`;
+  s+=campSVG(PTS.C1,"Camp I",ALT.c1,lit.c1,!first&&lit.c1&&!FX.lit.has("c1"))+campSVG(PTS.C2,"Camp II",ALT.c2,lit.c2,!first&&lit.c2&&!FX.lit.has("c2"));
+  FX.lit=new Set(Object.keys(lit).filter(k=>lit[k]));
+  const [sx,sy]=PTS.S;
+  s+=`<g transform="translate(${sx+24},${sy})"><path class="ik" stroke-width="3" d="M0,0 V-40"/><circle class="ik fy" stroke-width="1.6" cy="-42" r="2.6"/><path class="ik fme flagA" stroke-width="2.2" d="M0,-39 C8,-43 14,-35 24,-38 L22,-24 C14,-21 8,-29 0,-25Z"/><path class="ik fme flagB" stroke-width="2.2" d="M0,-39 C8,-35 14,-43 24,-36 L24,-22 C14,-27 8,-21 0,-25Z"/></g>
+   <text class="tl" x="${sx-6}" y="${sy-52}" text-anchor="middle">SUMMIT</text><text class="tl sm" x="${sx-6}" y="${sy-41}" text-anchor="middle">${fmt(ALT.top)} M</text>`;
   if(exp){
-    const [ax,ay]=posXY(exp,exp.anchor);s+=`<g><circle class="anchor" cx="${ax}" cy="${ay}" r="11"/><line class="anchor" x1="${ax-6}" y1="${ay-6}" x2="${ax+6}" y2="${ay+6}"/></g>`;
-    const tr=Math.min(1,(exp.rival.alt-ALT.base)/(ALT.top-ALT.base));const [rx,ry]=quad(RIV.p0,RIV.c,RIV.p1,tr);
-    s+=`<polygon class="rival-mk" points="${rx},${ry-10} ${rx+9},${ry} ${rx},${ry+10} ${rx-9},${ry}"/><text class="lbl" x="${rx+14}" y="${ry+4}" style="fill:var(--rival)">${esc(RIVALS[t.rival].name)}</text>`;
-    const [mx,my]=posXY(exp,exp.pitch);const back=exp.pitch>0?posXY(exp,exp.pitch-.35):[mx-14,my+18];
-    s+=`<line class="rope-line" x1="${mx}" y1="${my}" x2="${back[0]}" y2="${back[1]}"/><circle class="climber-me" cx="${back[0]}" cy="${back[1]}" r="7"/><circle class="climber-me" cx="${mx}" cy="${my}" r="9"/>`;
+    if(exp.anchor&&exp.anchor!==exp.pitch&&!campStops(exp).includes(exp.anchor)){const [ax,ay]=posXY(exp,exp.anchor);
+      s+=`<g transform="translate(${f1(ax)},${f1(ay)})"><circle class="ik" stroke-width="5" r="6.5"/><circle r="6.5" fill="none" style="stroke:#c7ccd4" stroke-width="2.2"/></g>`;}
+    const tot=total(exp);
+    if(exp.pitch<tot&&needsChoice(exp)<0){const ter=route(exp)[exp.pitch];if(ter){const [x,y]=posXY(exp,Math.min(tot,exp.pitch+1));s+=signSVG(x,y,`P${exp.pitch+1} ${TERRAIN[ter].name}`);}}}
+  FX.svg.querySelector("#routeL").innerHTML=s;
+}
+
+/* ---------- setup + loop ---------- */
+function ensureScene(){
+  const svg=$("#topo");if(!svg)return false;if(FX.svg===svg)return true;
+  FX.svg=svg;FX.mode="";FX.state=null;FX.routeKey="";FX.lit=new Set();FX.tw=[];FX.ch.main++;FX.ch.rival++;FX.cam=null;FX.trailP=-1;FX.sag=9;
+  svg.innerHTML=`<defs><linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--t-sky1)"/><stop offset="1" style="stop-color:var(--t-sky2)"/></linearGradient></defs>
+   <rect x="-60" y="-60" width="1120" height="740" fill="url(#skyG)"/>${bgSVG()}<g id="routeL"></g>
+   <path class="trail-o" id="trailO"/><path class="trail" id="trailI"/><path class="rope-o" id="ropeO"/><path class="rope-i" id="ropeI"/>
+   <g id="actL"></g><g id="popL"></g>`;
+  const q=s=>svg.querySelector(s);
+  FX.R={trailO:q("#trailO"),trailI:q("#trailI"),ropeO:q("#ropeO"),ropeI:q("#ropeI")};
+  FX.A={me:makeActor(TOONS.me),mate:makeActor(TOONS.mate),rival:null,rkind:null,rlabel:svgEl("text","tl sm")};
+  FX.A.rlabel.setAttribute("text-anchor","middle");
+  q("#actL").append(FX.A.rlabel,FX.A.mate.el,FX.A.me.el);
+  if(!FX.raf)FX.raf=requestAnimationFrame(frame);
+  return true;
+}
+function setRival(kind){const A=FX.A;if(A.rkind===kind)return;A.rkind=kind;if(A.rival)A.rival.el.remove();A.rival=null;
+  if(kind){A.rival=makeActor(TOONS[kind]||TOONS.twins);FX.svg.querySelector("#actL").prepend(A.rival.el);A.rlabel.textContent=RIVALS[kind]?.name||"";}
+  A.rlabel.style.display=kind?"":"none";}
+function frame(now){
+  const svg=FX.svg;if(!svg||!svg.isConnected){FX.raf=0;FX.svg=null;return;}
+  const dt=Math.min(.05,Math.max(0,(now-(FX.last||now))/1000));FX.last=now;
+  for(const w of FX.tw.slice()){
+    if(w.ch&&FX.ch[w.ch]!==w.id){FX.tw.splice(FX.tw.indexOf(w),1);w.res(false);continue;}
+    const k=w.ms?clamp((now-w.t0)/w.ms,0,1):1;w.fn(k);
+    if(k>=1){FX.tw.splice(FX.tw.indexOf(w),1);w.res(true);}
   }
-  svg.innerHTML=s;
+  const A=FX.A,e=FX.exp,R=FX.R;
+  if(e){const tot=total(e);
+    for(const a of [A.me,A.mate]){const p=Math.min(a.p,tot),[x,y]=posXY(e,p),[x0]=posXY(e,p-.1),[x1]=posXY(e,p+.1);place(a,x,y,x1>=x0?1:-1);}
+    const ax=A.me.x,ay=A.me.y-15*SC,bx=A.mate.x,by=A.mate.y-15*SC;
+    const rope=`M${f1(ax)},${f1(ay)} Q${f1((ax+bx)/2)},${f1((ay+by)/2+FX.sag)} ${f1(bx)},${f1(by)}`;
+    R.ropeO.setAttribute("d",rope);R.ropeI.setAttribute("d",rope);
+    const tp=clamp(A.me.p,0,tot);
+    if(Math.abs(tp-FX.trailP)>.01){FX.trailP=tp;const pts=[];for(let p=0;p<tp;p+=.12)pts.push(posXY(e,p));pts.push(posXY(e,tp));
+      const d=pts.length>1?"M"+pts.map(q=>f1(q[0])+","+f1(q[1])).join(" L"):"M0,0";R.trailO.setAttribute("d",d);R.trailI.setAttribute("d",d);}
+  }
+  if(A.rival){const Rv=A.rival,tr=clamp((Rv.alt-ALT.base)/(ALT.top-ALT.base),0,1),[x,y]=quad(RIV.p0,RIV.c,RIV.p1,tr);place(Rv,x,y,-1);
+    A.rlabel.setAttribute("x",f1(Rv.x));A.rlabel.setAttribute("y",f1(Rv.y-64*SC));}
+  let fx,fy,w=FX.camW;
+  if(FX.focus==="all"){fx=500;fy=310;w=1000;}
+  else if(FX.focus==="summit"){fx=PTS.S[0];fy=PTS.S[1]+110;}
+  else{fx=A.me.x+50*A.me.face;fy=A.me.y-40;}
+  const h=w*.62,tx=clamp(fx,w/2,1000-w/2),ty=clamp(fy,h/2,620-h/2);
+  if(!FX.cam)FX.cam={x:tx,y:ty,w};
+  else{const k=RM.matches?1:1-Math.exp(-dt*2.4);FX.cam.x+=(tx-FX.cam.x)*k;FX.cam.y+=(ty-FX.cam.y)*k;FX.cam.w+=(w-FX.cam.w)*k;}
+  const c=FX.cam,chh=c.w*.62;svg.setAttribute("viewBox",`${f1(c.x-c.w/2)} ${f1(c.y-chh/2)} ${f1(c.w)} ${f1(chh)}`);
+  FX.raf=requestAnimationFrame(frame);
+}
+
+/* ---------- effects ---------- */
+const BURST=(()=>{let d="";for(let i=0;i<32;i++){const r=i%2?40:57,a=i/32*Math.PI*2;d+=(i?"L":"M")+(Math.cos(a)*r).toFixed(1)+","+(Math.sin(a)*r).toFixed(1);}return d+"Z";})();
+const STAR=(()=>{let d="";for(let i=0;i<10;i++){const r=i%2?2.2:5.5,a=-Math.PI/2+i*Math.PI/5;d+=(i?"L":"M")+(Math.cos(a)*r).toFixed(2)+","+(Math.sin(a)*r).toFixed(2);}return d+"Z";})();
+function title(text,sub,tone){const fx=$("#fx");if(!fx)return;fx.querySelectorAll(".tcard").forEach(x=>x.remove());
+  const el=document.createElement("div");el.className="tcard "+(tone||"");
+  const fs=Math.min(11,125/text.length).toFixed(2);
+  // per-letter nudge, same hand-set-type idea as BktList's wobble.js
+  el.innerHTML=`<svg class="burst" viewBox="-60 -60 120 120"><g><path d="${BURST}"/><circle r="31"/></g></svg>
+   <b style="font-size:min(${fs}cqw,84px)">${[...text].map((ch,i)=>{const c=ch.charCodeAt(0),s1=((c*31+i*17)%100)/100,s2=((c*53+i*7)%100)/100;
+     return `<span style="--i:${i};--y:${((s1-.5)*.16).toFixed(3)}em;--r:${((s2-.5)*10).toFixed(1)}deg">${ch===" "?"&nbsp;":esc(ch)}</span>`;}).join("")}</b>
+   ${sub?`<small>${esc(sub)}</small>`:""}`;
+  fx.appendChild(el);setTimeout(()=>el.remove(),2500);}
+function confetti(n=26){const fx=$("#fx");if(!fx||RM.matches)return;const cols=["var(--t-me)","var(--t-mate)","var(--t-rival)","var(--t-cream)","#9bd16a"];
+  for(let i=0;i<n;i++){const c=document.createElement("i");c.className="conf";
+    c.style.cssText=`--x:${(Math.random()*100).toFixed(1)}%;--d:${(Math.random()*.5).toFixed(2)}s;--c:${cols[i%cols.length]};--dr:${Math.round((Math.random()*2-1)*60)}px;--rot:${Math.round(Math.random()*720-360)}deg;--dur:${(1.4+Math.random()).toFixed(2)}s`;
+    fx.appendChild(c);setTimeout(()=>c.remove(),3200);}}
+function pop(a,text,cls){const L=FX.svg&&FX.svg.querySelector("#popL");if(!L)return;const x=a.x,y=a.y-62*SC;
+  const g=svgEl("g","",`<text class="pop ${cls||""}" text-anchor="middle">${esc(text)}</text>`);L.appendChild(g);
+  play(1000,k=>{const s=k<.3?easeBack(k/.3):1;g.setAttribute("transform",`translate(${f1(x)},${f1(y-24*k)}) rotate(${f1(-8+5*Math.sin(k*9))}) scale(${Math.max(.01,s).toFixed(3)})`);g.style.opacity=k>.75?((1-k)/.25).toFixed(2):1;},null).then(()=>g.remove());}
+function stars(a,ms=1600){const L=FX.svg&&FX.svg.querySelector("#popL");if(!L)return;
+  const g=svgEl("g","",[0,1,2].map(()=>`<path class="ik fy" stroke-width="1.6" d="${STAR}"/>`).join(""));L.appendChild(g);const kids=[...g.children];
+  play(ms,k=>{const hx=a.x,hy=a.y-52*SC;kids.forEach((c,i)=>{const an=k*Math.PI*7+i*2.094;c.setAttribute("transform",`translate(${f1(hx+Math.cos(an)*13)},${f1(hy+Math.sin(an)*4)})`);});g.style.opacity=k>.85?((1-k)/.15).toFixed(2):1;},null).then(()=>g.remove());}
+
+/* ---------- sequences ---------- */
+async function climbSeq(from,to,id){
+  const A=FX.A,ok=()=>FX.ch.main===id,d=Math.max(650,(to-from)*800),m0=A.mate.p;
+  A.me.set("climb");
+  const lag=wait(200).then(r=>{if(!r)return false;A.mate.set("climb");return play(d,k=>{A.mate.p=m0+(to-.5-m0)*ease(k);});});
+  await play(d,k=>{A.me.p=from+(to-from)*ease(k);});
+  if(ok())A.me.set("idle");
+  await lag;if(ok())A.mate.set("idle");
+  return ok();
+}
+async function boingSeq(id){const A=FX.A;A.me.set("fall");A.mate.set("brace");pop(A.me,"BOING!");
+  await play(1100,k=>{if(k<.2){A.me.dy=30*ease(k/.2);FX.sag=9*(1-k/.2);}else{const u=k-.2;A.me.dy=30*Math.exp(-4.2*u)*Math.cos(u*14);FX.sag=k<.6?0:9*(k-.6)/.4;}});
+  A.me.dy=0;FX.sag=9;if(FX.ch.main!==id)return false;A.me.set("idle");A.mate.set("idle");return true;}
+async function fallSeq(from,to,id){const A=FX.A,ok=()=>FX.ch.main===id;
+  A.me.set("fall");A.mate.set("fall");pop(A.me,"YIKES!","bad");
+  await play(280,k=>{A.me.dy=-18*Math.sin(k*Math.PI/2);A.mate.dy=-10*Math.sin(k*Math.PI/2);});if(!ok())return false;
+  const m0=A.mate.p;
+  await play(1150,k=>{const q=k*k;A.me.p=from+(to-from)*q;A.mate.p=m0+(to-.5-m0)*q;A.me.dy=-18*(1-q);A.mate.dy=-10*(1-q);A.me.rot=-600*q;A.mate.rot=-480*q;});
+  A.me.rot=A.mate.rot=A.me.dy=A.mate.dy=0;if(!ok())return false;
+  A.me.set("dizzy");A.mate.set("dizzy");stars(A.me);stars(A.mate);
+  if(!(await wait(1600)))return false;A.me.set("idle");A.mate.set("idle");return true;}
+async function runEvent(exp,o){
+  const id=++FX.ch.main,A=FX.A,ok=()=>FX.ch.main===id;
+  for(const a of [A.me,A.mate]){a.dx=a.dy=a.rot=0;}FX.sag=9;
+  const to=typeof o.to==="number"?o.to:exp.pitch;
+  if(o.fall&&to<A.me.p-.01){title("WHOOPS!",`Down to ${fmt(altOf(exp,to))} m`,"bad");if(!(await fallSeq(A.me.p,to,id)))return;}
+  else if(o.fall){if(!(await boingSeq(id)))return;}
+  else if(to>A.me.p+.01){if(!(await climbSeq(A.me.p,to,id)))return;
+    if(o.echo&&!o.arrived)title("ECHO!","Same rare answer","good");
+    else if(!o.arrived)pop(A.me,o.move>=2?"HUP HUP!":"HUP!");}
+  else{A.me.set("hop");A.mate.set("hop");pop(A.me,"PHEW!");if(!(await wait(700)))return;A.me.set("idle");A.mate.set("idle");}
+  if(!ok()||!o.arrived)return;
+  title(o.arrived==="summit"?"SUMMIT!":o.arrived.toUpperCase()+"!",`${fmt(altOf(exp,to))} m`,"camp");confetti();
+  A.me.set("cheer");A.mate.set("cheer");if(!(await wait(2000)))return;A.me.set("idle");A.mate.set("idle");
+}
+async function runRival(a1){const id=++FX.ch.rival,Rv=FX.A.rival;if(!Rv)return;const ok=()=>FX.ch.rival===id,a0=Rv.alt;Rv.rot=0;
+  if(!(await wait(500,"rival")))return;
+  if(a1<a0){Rv.set("fall");await play(1100,k=>{Rv.alt=a0+(a1-a0)*k*k;Rv.rot=480*k*k;},"rival");Rv.rot=0;if(!ok())return;
+    Rv.set("dizzy");stars(Rv);if(!(await wait(1500,"rival")))return;}
+  else{Rv.set("climb");if(!(await play(1300,k=>{Rv.alt=a0+(a1-a0)*ease(k);},"rival")))return;}
+  Rv.set(a1>=ALT.top?"cheer":"idle");}
+async function runSummit(t){const id=++FX.ch.main,A=FX.A,won=t.exp.finished==="won";
+  for(const a of [A.me,A.mate]){a.dx=a.dy=a.rot=0;}A.me.p=t.exp.pitch;A.mate.p=t.exp.pitch-.5;FX.sag=9; // a cut-off climb lands here
+  title(won?"FIRST TO THE TOP!":"MADE IT!",won?`Beat ${RIVALS[t.rival].name}`:"Second place","camp");confetti(40);
+  A.me.set("cheer");A.mate.set("cheer");if(!(await wait(3000)))return;if(FX.ch.main===id){A.me.set("idle");A.mate.set("idle");}}
+async function runDemo(){ // lobby: a rope team loops up the mountain to show off the moves
+  const id=++FX.ch.main,A=FX.A,ok=()=>FX.ch.main===id,tot=total(DEMO),stops=campStops(DEMO);
+  for(const a of [A.me,A.mate]){a.dx=a.dy=a.rot=0;}
+  A.me.p=0;A.mate.p=-.5;A.me.set("idle");A.mate.set("idle");
+  if(RM.matches)return;
+  while(ok()){
+    A.me.p=0;A.mate.p=-.5;
+    if(!(await wait(1200)))return;
+    for(let p=0;p<tot;p++){
+      if(!(await climbSeq(p,p+1,id)))return;
+      if(p===2&&!(await boingSeq(id)))return;
+      if(stops.includes(p+1)){A.me.set("cheer");A.mate.set("cheer");pop(A.me,p+1===tot?"SUMMIT!":"CAMP!");
+        if(!(await wait(1700)))return;A.me.set("idle");A.mate.set("idle");}
+      if(!(await wait(450)))return;
+    }
+    if(!(await wait(1200)))return;
+  }
+}
+function snap(exp,t){FX.ch.main++;FX.ch.rival++;const A=FX.A;
+  for(const a of [A.me,A.mate]){a.dx=a.dy=a.rot=0;}FX.sag=9;
+  A.me.p=exp.pitch;A.mate.p=exp.pitch-.5;const st=t.round.phase==="summit"?"cheer":"idle";A.me.set(st);A.mate.set(st);
+  if(A.rival){A.rival.alt=exp.rival.alt;A.rival.rot=0;A.rival.set(exp.rival.alt>=ALT.top?"cheer":"idle");}
+  FX.cam=null;FX.trailP=-1;}
+
+function drawTopo(t){
+  if(!ensureScene())return;
+  const exp=t?t.exp:null;buildRoute(exp);
+  if(!t){setRival(null);FX.focus="all";if(FX.mode!=="lobby"){FX.mode="lobby";FX.exp=DEMO;FX.cam=null;runDemo();}return;}
+  const r=t.round;FX.exp=exp;setRival(t.rival);
+  FX.focus=r.phase==="summit"?"summit":"me";FX.camW=r.phase==="camp"?840:r.phase==="summit"?720:600;
+  const st={n:exp.n,pitch:exp.pitch,ralt:exp.rival.alt,res:r.phase==="reveal"?r.resolvedAt:null,phase:r.phase};
+  const prev=FX.state;FX.state=st;
+  if(FX.mode!=="game"||!prev||prev.n!==st.n){FX.mode="game";snap(exp,t);return;}
+  if(st.res&&st.res!==prev.res&&r.result)runEvent(exp,r.result);
+  else if(st.pitch!==prev.pitch){const id=++FX.ch.main;st.pitch>prev.pitch?climbSeq(FX.A.me.p,st.pitch,id):fallSeq(FX.A.me.p,st.pitch,id);}
+  if(st.ralt!==prev.ralt)runRival(st.ralt);
+  if(st.phase==="summit"&&prev.phase!=="summit")runSummit(t);
 }
 
 /* ============================== BOOT ============================== */
